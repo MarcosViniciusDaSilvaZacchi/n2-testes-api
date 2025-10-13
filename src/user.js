@@ -20,7 +20,7 @@ function logInUser(userName, password){
   console.log(`Usuário ${userName} foi logado`);
 } 
 
-function listAllUsers(){
+function getAllUsers(){
   return [...users];
 }
 
@@ -62,3 +62,14 @@ function deleteUser(id){
 function resetUsers() {
   users.length = 0;
 }
+
+module.exports = { 
+  createUser, 
+  logInUser, 
+  getAllUsers, 
+  getUserById, 
+  getUsersByName, 
+  updateUser, 
+  deleteUser, 
+  resetUsers 
+};
