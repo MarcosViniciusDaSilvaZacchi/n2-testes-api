@@ -49,7 +49,7 @@ function updateUser(id, field, newData){
     const userExists = users.find(u => u.userName.toLowerCase() === newData.toLowerCase());
     if (userExists && userExists.id !== id)
       throw new Error("Nome de usuário já está cadastrado");
-  }
+  };
   user[field] = newData;
 }
 

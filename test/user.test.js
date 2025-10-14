@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const chai = require('chai');
-const chaiHttp = require('chai-http').default;
+//const chaiHttp = require('chai-http').default;
 const usuario = require('../src/user.js');
 
 const expect = chai.expect;
@@ -164,10 +164,16 @@ describe('getAllUsers', () => {
         expect(listUser).to.length(2);
         expect(listUser[0]).to.contain({id: 1, userName: 'Marcelinho123'});
     });
+
+    it('Lista de usuários vazia', () => {
+        const listUser = usuario.getAllUsers()
+        expect(listUser).to.have.length(0);
+        expect(listUser).to.deep.equal([]);
+    });
 });
 
 describe('getUserById', () => {
-    it('Busca os usuário pelo id', () => {
+    it('Busca o usuário pelo id', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -185,6 +191,10 @@ describe('getUserById', () => {
         });
         
         expect(usuario.getUserById(1)).to.contain({ id:1, userName: 'Marcelinho123', email: 'marcelo@gmail.com' });
+    });
+
+    it('Usuário não encontrado', () => {
+        expect(usuario.getUserById(99)).to.undefined;
     });
 });
 
@@ -222,6 +232,11 @@ describe('getUsersByName', () => {
         // Valida se a senha foi ocultada
         expect(listUser[0]).to.not.contain({password: 12345});
     });
+    it('Nome não encontrado', () => {
+        const listUser = usuario.getUsersByName('Pablo');
+        expect(listUser).to.have.length(0);
+        expect(listUser).to.deep.equal([]);
+    });
 });
 
 describe('updateUser', () => {
@@ -239,7 +254,6 @@ describe('updateUser', () => {
 
         const dataUser = usuario.getUserById(1);
         expect(dataUser).to.contain({name: 'Carlao'});
-        expect(dataUser).to.not.contain({name: 'Carlos'});
     });
 
     it('Usuário não encontrado', () => {
@@ -294,6 +308,22 @@ describe('updateUser', () => {
         });
 
         (() => usuario.updateUser(1, 'userName', 'CARLINHOS')).should.throw('Nome de usuário já está cadastrado');
+    });
+
+    it('Atualiza userName mantendo o mesmo usuário', () => {
+        const user = {
+            id: 1,
+            name: 'Carlos',
+            userName: 'Carlinhos',
+            password: '12345',
+            email: 'carlos@gmail.com'
+        };
+        usuario.createUser(user);
+
+        usuario.updateUser(1, 'userName', 'CARLINHOS');
+
+        const dataUser = usuario.getUserById(1);
+        expect(dataUser.userName).to.equal('CARLINHOS');
     });
 });
 
