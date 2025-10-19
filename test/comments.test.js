@@ -95,3 +95,5 @@ describe("Testes do módulo de comentários", function () {
       }
     });
   });
+});
+
