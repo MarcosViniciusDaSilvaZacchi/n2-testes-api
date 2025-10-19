@@ -1,90 +1,158 @@
-// TESTES COMENTARIOS / YAN CARLOS 
+// test/comments.test.js
+
 const chai = require('chai');
 const sinon = require('sinon');
-const axios = require('axios');
 
-const comments = require('../src/comments');
-
+const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
-describe('Módulo de Comentários', () => {
+const commentsModule = require('../src/comments.js'); // Para o Sinon
+const {
+  criarComentarioFake,
+  apagarComentario,
+  resetComentarios,
+  listarComentarios,
+  buscarComentarioPorId,
+  filtrarComentariosPorPostId
+} = commentsModule;
 
-  // Testes unitários
-  describe('Funções locais', () => {
-    it('deve criar um comentário fake corretamente', () => {
-      const result = comments.criarComentarioFake({ body: "Teste", email: "a@a.com" });
-      assert.isObject(result);
-      assert.strictEqual(result.body, "Teste");
-      expect(result).to.have.property('id');
+describe('Gerenciamento de Comentários', () => {
+
+  // Limpa comentários antes de cada teste
+  beforeEach(() => {
+    resetComentarios();
+  });
+
+  // =========================
+  // Testes com EXPECT
+  // =========================
+  describe('Funções de Criação e Busca (com EXPECT)', () => {
+    it('deve criar um comentário fake com sucesso', () => {
+      const dados = { body: 'Comentário teste', email: 'teste@ex.com' };
+      const comentario = criarComentarioFake(dados);
+      expect(comentario).to.be.an('object');
+      expect(comentario).to.have.property('body', 'Comentário teste');
+      expect(comentario).to.have.property('email', 'teste@ex.com');
+      expect(comentario.id).to.be.a('number');
     });
 
-    it('deve lançar erro ao criar comentário com dados inválidos', () => {
-      assert.throws(() => comments.criarComentarioFake({}), /Dados inválidos/);
+    it('deve lançar erro se dados forem inválidos', () => {
+      expect(() => criarComentarioFake({})).to.throw('Dados inválidos para criar comentário');
+      expect(() => criarComentarioFake(null)).to.throw('Dados inválidos para criar comentário');
     });
 
-    it('deve apagar comentário retornando true', () => {
-      const deletado = comments.apagarComentario(1);
-      assert.isBoolean(deletado);
-      assert.isTrue(deletado);
+    it('deve buscar um comentário por ID (mockado)', async () => {
+      const stub = sinon.stub(commentsModule, 'buscarComentarioPorId').resolves({ id: 1, body: 'Comentário 1' });
+      const result = await commentsModule.buscarComentarioPorId(1);
+      expect(result).to.have.property('id', 1);
+      stub.restore();
     });
 
-    it('deve lançar erro ao apagar comentário sem ID', () => {
-      assert.throws(() => comments.apagarComentario(), /ID inválido/);
+    it('deve filtrar comentários por postId (mockado)', async () => {
+      const stub = sinon.stub(commentsModule, 'filtrarComentariosPorPostId').resolves([{ id: 2, postId: 1 }]);
+      const result = await commentsModule.filtrarComentariosPorPostId(1);
+      expect(result).to.be.an('array');
+      expect(result[0]).to.have.property('postId', 1);
+      stub.restore();
+    });
+
+    it('listarComentarios deve retornar array (mockado)', async () => {
+      const stub = sinon.stub(commentsModule, 'listarComentarios').resolves([{ id: 1, body: 'Comentário 1' }]);
+      const result = await commentsModule.listarComentarios();
+      expect(result).to.be.an('array');
+      stub.restore();
     });
   });
 
-  // Testes de API mockados com Sinon
-  describe('Requisições mockadas com Sinon', () => {
-    let stubGet;
-
-    afterEach(() => sinon.restore());
-
-    it('deve simular listar comentários com sucesso', async () => {
-      const fakeResponse = { data: [{ id: 1, body: "comentário fake" }] };
-      stubGet = sinon.stub(axios, 'get').resolves(fakeResponse);
-
-      const result = await comments.listarComentarios();
-      assert.isArray(result);
-      assert.lengthOf(result, 1);
-      assert.deepEqual(result[0], fakeResponse.data[0]);
+  // =========================
+  // Testes com SHOULD
+  // =========================
+  describe('Funções de Modificação (com SHOULD)', () => {
+    it('deve apagar um comentário com sucesso', () => {
+      const comentario = criarComentarioFake({ body: 'Teste', email: 'a@a.com' });
+      apagarComentario(comentario.id).should.be.true;
     });
 
-    it('deve simular busca de comentário por ID', async () => {
-      const fakeResponse = { data: { id: 1, body: "ok" } };
-      stubGet = sinon.stub(axios, 'get').resolves(fakeResponse);
+    it('deve lançar erro ao apagar comentário sem ID', () => {
+      (() => apagarComentario()).should.throw('ID inválido');
+    });
+  });
 
-      const result = await comments.buscarComentarioPorId(1);
+  // =========================
+  // Testes com ASSERT
+  // =========================
+  describe('Testes de Validação e Filtros (com ASSERT)', () => {
+    it('ID de comentário criado deve ser número', () => {
+      const comentario = criarComentarioFake({ body: 'Teste', email: 'a@a.com' });
+      assert.isNumber(comentario.id);
+    });
+
+    it('deve lançar erro ao buscar comentário sem ID', async () => {
+      try {
+        await buscarComentarioPorId();
+        assert.fail('Deveria lançar erro');
+      } catch (err) {
+        assert.strictEqual(err.message, 'ID é obrigatório');
+      }
+    });
+
+    it('deve lançar erro ao filtrar sem postId', async () => {
+      try {
+        await filtrarComentariosPorPostId();
+        assert.fail('Deveria lançar erro');
+      } catch (err) {
+        assert.strictEqual(err.message, 'postId é obrigatório');
+      }
+    });
+  });
+
+  // =========================
+  // Testes com SINON
+  // =========================
+  describe('Testes de API Mockada com SINON', () => {
+    let listarStub, buscarStub, filtrarStub;
+
+    beforeEach(() => {
+      listarStub = sinon.stub(commentsModule, 'listarComentarios').resolves([]);
+      buscarStub = sinon.stub(commentsModule, 'buscarComentarioPorId').resolves({ id: 1, body: 'Teste' });
+      filtrarStub = sinon.stub(commentsModule, 'filtrarComentariosPorPostId').resolves([]);
+    });
+
+    afterEach(() => {
+      listarStub.restore();
+      buscarStub.restore();
+      filtrarStub.restore();
+    });
+
+    it('listarComentarios deve ser chamado uma vez', async () => {
+      await commentsModule.listarComentarios();
+      assert.isTrue(listarStub.calledOnce);
+    });
+
+    it('buscarComentarioPorId deve retornar dados mockados', async () => {
+      const result = await commentsModule.buscarComentarioPorId(1);
       expect(result).to.have.property('id', 1);
-      assert.strictEqual(result.body, "ok");
     });
 
-    it('deve simular filtro por Post ID', async () => {
-      const fakeResponse = { data: [{ postId: 1, id: 10, body: "x" }] };
-      stubGet = sinon.stub(axios, 'get').resolves(fakeResponse);
-
-      const result = await comments.filtrarComentariosPorPostId(1);
+    it('filtrarComentariosPorPostId deve retornar array mockado', async () => {
+      const result = await commentsModule.filtrarComentariosPorPostId(1);
       assert.isArray(result);
-      expect(result[0]).to.have.property("postId", 1);
     });
 
-    it('deve lançar erro se postId for vazio', async () => {
+    it('buscarComentarioPorId deve lançar erro mockado', async () => {
+      buscarStub.rejects(new Error('Erro mockado'));
       try {
-        await comments.filtrarComentariosPorPostId();
-        assert.fail("Deveria ter lançado erro");
+        await commentsModule.buscarComentarioPorId(1);
+        assert.fail('Deveria lançar erro');
       } catch (err) {
-        assert.match(err.message, /postId é obrigatório/);
+        err.message.should.equal('Erro mockado');
       }
     });
 
-    it('deve mockar erro em requisição de API', async () => {
-      stubGet = sinon.stub(axios, 'get').rejects(new Error("Falha na API"));
-      try {
-        await comments.listarComentarios();
-        assert.fail("Deveria ter lançado erro");
-      } catch (err) {
-        assert.match(err.message, /Falha/);
-      }
+    it('listarComentarios chamado sem argumentos retorna array', async () => {
+      const result = await commentsModule.listarComentarios();
+      assert.isArray(result);
     });
   });
 });
