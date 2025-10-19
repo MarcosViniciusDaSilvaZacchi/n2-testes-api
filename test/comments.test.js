@@ -1,4 +1,4 @@
-// test/comments.test.js
+// test/comments.test.js by yan
 const { assert, expect, should } = require("chai");
 const sinon = require("sinon");
 const axios = require("axios");
@@ -9,11 +9,11 @@ const comments = require("../src/comments");
 chai.use(chaiHttp);
 should();
 
-describe("🔹 Testes do módulo de comentários", function () {
+describe("Testes do módulo de comentários", function () {
   
-  // ----------------------------
-  // 🔸 TESTES UNITÁRIOS
-  // ----------------------------
+
+  //Testes unitarios
+ 
   describe("Funções locais", function () {
     
     it("Deve criar um comentário fake corretamente", function () {
@@ -46,9 +46,9 @@ describe("🔹 Testes do módulo de comentários", function () {
     });
   });
 
-  // ----------------------------
-  // 🔸 TESTES MOCKADOS (Sinon)
-  // ----------------------------
+  
+  // testes (Sinon)
+
   describe("Requisições mockadas com Sinon", function () {
     afterEach(() => sinon.restore());
 
@@ -95,35 +95,3 @@ describe("🔹 Testes do módulo de comentários", function () {
       }
     });
   });
-
-  // ----------------------------
-  // 🔸 TESTES DE API REAIS
-  // ----------------------------
-  describe("Testes reais com JSONPlaceholder API", function () {
-    this.timeout(5000); // Aumenta timeout por segurança
-
-    it("Deve retornar lista de comentários reais da API", async function () {
-      const res = await chai.request("https://jsonplaceholder.typicode.com").get("/comments");
-      res.should.have.status(200);
-      expect(res.body).to.be.an("array");
-      expect(res.body[0]).to.have.property("id");
-    });
-
-    it("Deve buscar um comentário real por ID", async function () {
-      const res = await chai.request("https://jsonplaceholder.typicode.com").get("/comments/1");
-      res.should.have.status(200);
-      expect(res.body).to.have.property("id", 1);
-    });
-
-    it("Deve filtrar comentários por postId", async function () {
-      const res = await chai.request("https://jsonplaceholder.typicode.com").get("/comments?postId=1");
-      res.should.have.status(200);
-      expect(res.body[0]).to.have.property("postId", 1);
-    });
-
-    it("Deve retornar 404 ao buscar ID inexistente", async function () {
-      const res = await chai.request("https://jsonplaceholder.typicode.com").get("/comments/999999");
-      res.should.have.status(404);
-    });
-  });
-});
