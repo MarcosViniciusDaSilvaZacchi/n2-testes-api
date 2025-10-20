@@ -167,8 +167,8 @@ describe('getAllUsers', () => {
 
     it('Lista de usuários vazia', () => {
         const listUser = usuario.getAllUsers()
-        expect(listUser).to.have.length(0);
-        expect(listUser).to.deep.equal([]);
+        expect(listUser).to.have.length(0); // assert
+        expect(listUser).to.deep.equal([]); // assert
     });
 });
 
@@ -194,7 +194,7 @@ describe('getUserById', () => {
     });
 
     it('Usuário não encontrado', () => {
-        expect(usuario.getUserById(99)).to.undefined;
+        expect(usuario.getUserById(99)).to.undefined; // assert
     });
 });
 
@@ -323,7 +323,7 @@ describe('updateUser', () => {
         usuario.updateUser(1, 'userName', 'CARLINHOS');
 
         const dataUser = usuario.getUserById(1);
-        expect(dataUser.userName).to.equal('CARLINHOS');
+        expect(dataUser.userName).to.equal('CARLINHOS'); // assert
     });
 });
 
@@ -367,6 +367,6 @@ describe('reseteUsers', () => {
         usuario.createUser(user);
 
         usuario.resetUsers();
-        expect(usuario.getAllUsers()).to.length(0);
+        expect(usuario.getAllUsers()).to.length(0); // assert
     });
 });
