@@ -4,6 +4,7 @@ const chai = require('chai');
 const usuario = require('../src/user.js');
 
 const expect = chai.expect;
+const assert = chai.assert;
 chai.should();
 //chai.use(chaiHttp);
 
@@ -12,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('createUser', () => {
-    it('Usuário adicionado', () => {
+    it('EXPECT - Usuário adicionado', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -35,7 +36,7 @@ describe('createUser', () => {
         });
     });
 
-    it('Dados do usuário inválidos', () => {
+    it('SHOULD - Dados do usuário inválidos', () => {
         // !user
         (() => usuario.createUser({})).should.throw('Dados inválidos');
         
@@ -52,7 +53,7 @@ describe('createUser', () => {
         (() => usuario.createUser({id: 99, userName: 'Error', password: 'error123'})).should.throw('Dados inválidos');
     });
 
-    it('Email do usuário inválido', () => {
+    it('SHOULD - Email do usuário inválido', () => {
         // Sem o ' @ '
 
         (() => usuario.createUser({
@@ -64,7 +65,7 @@ describe('createUser', () => {
         })).should.throw('Email inválido');
     });
 
-    it('Dados duplicados', () => {
+    it('SHOULD - Dados duplicados', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -104,7 +105,7 @@ describe('createUser', () => {
 });
 
 describe('LogInUser', () => {
-    it('Loga usuário', () => {
+    it('SINON  - Loga usuário', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -124,11 +125,11 @@ describe('LogInUser', () => {
         logStub.restore();
     });
 
-    it('Usuário não encontrado', () => {
+    it('SHOULD - Usuário não encontrado', () => {
         (() => usuario.logInUser('Error', 'error123')).should.throw('Usuário não encontrado');
     });
 
-    it('Senha inválida', () => {
+    it('SHOULD - Senha inválida', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -143,7 +144,7 @@ describe('LogInUser', () => {
 });
 
 describe('getAllUsers', () => {
-    it('Busca todos os usuários', () => {
+    it('EXPECT - Busca todos os usuários', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -165,15 +166,15 @@ describe('getAllUsers', () => {
         expect(listUser[0]).to.contain({id: 1, userName: 'Marcelinho123'});
     });
 
-    it('Lista de usuários vazia', () => {
+    it('ASSERT - Lista de usuários vazia', () => {
         const listUser = usuario.getAllUsers()
-        expect(listUser).to.have.length(0); // assert
-        expect(listUser).to.deep.equal([]); // assert
+        assert.strictEqual(listUser.length, 0);
+        assert.deepStrictEqual(listUser, []);
     });
 });
 
 describe('getUserById', () => {
-    it('Busca o usuário pelo id', () => {
+    it('EXPECT - Busca o usuário pelo id', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -193,13 +194,13 @@ describe('getUserById', () => {
         expect(usuario.getUserById(1)).to.contain({ id:1, userName: 'Marcelinho123', email: 'marcelo@gmail.com' });
     });
 
-    it('Usuário não encontrado', () => {
-        expect(usuario.getUserById(99)).to.undefined; // assert
+    it('ASSERT - Usuário não encontrado', () => {
+        assert.isUndefined(usuario.getUserById(99));
     });
 });
 
 describe('getUsersByName', () => {
-    it('Busca os usuários pelo nome', () => {
+    it('EXPECT - Busca os usuários pelo nome', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -232,15 +233,34 @@ describe('getUsersByName', () => {
         // Valida se a senha foi ocultada
         expect(listUser[0]).to.not.contain({password: 12345});
     });
-    it('Nome não encontrado', () => {
+
+    it('ASSERT - Nome não encontrado', () => {
         const listUser = usuario.getUsersByName('Pablo');
-        expect(listUser).to.have.length(0);
-        expect(listUser).to.deep.equal([]);
+        assert.lengthOf(listUser, 0)
+        assert.deepStrictEqual(listUser, []);
+    });
+
+    it('SINON  - Busca os usuários pelo nome, usando stub', () => {
+        const fakeUser = {
+            id: 1,
+            name: 'Stubbed User',
+            userName: 'stub_user',
+            password: '12345',
+            email: 'stubbed_user@gmail.com'
+        };
+
+        const stub = sinon.stub(usuario, 'getUsersByName').returns([fakeUser]);
+
+        const result = usuario.getUsersByName('Stubbed User');
+
+        expect(stub.calledOnce).to.be.true;
+        expect(result).to.be.an('array').that.has.lengthOf(1);
+        expect(result[0].name).to.equal('Stubbed User');
     });
 });
 
 describe('updateUser', () => {
-    it('Atualiza usuário', () => {
+    it('EXPECT - Atualiza usuário', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -256,11 +276,11 @@ describe('updateUser', () => {
         expect(dataUser).to.contain({name: 'Carlao'});
     });
 
-    it('Usuário não encontrado', () => {
+    it('SHOULD - Usuário não encontrado', () => {
         (() => usuario.updateUser(99, 'name', 'Error')).should.throw('Usuário não encontrado');
     });
 
-    it('Dados que não podem ser alterados', () => {
+    it('SHOULD - Dados que não podem ser alterados', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -277,7 +297,7 @@ describe('updateUser', () => {
         (() => usuario.updateUser(1, 'email', 'error@gmail.com')).should.throw('Esses dados não podem ser alterados');
     });
 
-    it('Campo inválido', () => {
+    it('SHOULD - Campo inválido', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -290,7 +310,7 @@ describe('updateUser', () => {
         (() => usuario.updateUser(1, 'banana', 'Error')).should.throw('Campo inválido');
     });
 
-    it('Apelido já exite', () => {
+    it('SHOULD - Apelido já exite', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -310,7 +330,7 @@ describe('updateUser', () => {
         (() => usuario.updateUser(1, 'userName', 'CARLINHOS')).should.throw('Nome de usuário já está cadastrado');
     });
 
-    it('Atualiza userName mantendo o mesmo usuário', () => {
+    it('ASSERT - Atualiza userName mantendo o mesmo usuário', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -323,12 +343,12 @@ describe('updateUser', () => {
         usuario.updateUser(1, 'userName', 'CARLINHOS');
 
         const dataUser = usuario.getUserById(1);
-        expect(dataUser.userName).to.equal('CARLINHOS'); // assert
+        assert.strictEqual(dataUser.userName, 'CARLINHOS');
     });
 });
 
 describe('deleteUser', () => {
-    it('Deleta usuário', () => {
+    it('EXPECT - Deleta usuário', () => {
         usuario.createUser({
             id: 1,
             name: 'Marcelo',
@@ -350,13 +370,13 @@ describe('deleteUser', () => {
         expect(usuario.getUserById(1)).to.be.undefined;
     });
 
-    it('Usuário não encontrado', () => {
+    it('SHOULD - Usuário não encontrado', () => {
         (() => usuario.deleteUser(99)).should.throw('Usuário não encontrado');
     });
 });
 
 describe('reseteUsers', () => {
-    it('Reseta lista de usuários', () => {
+    it('ASSERT - Reseta lista de usuários', () => {
         const user = {
             id: 1,
             name: 'Carlos',
@@ -367,6 +387,6 @@ describe('reseteUsers', () => {
         usuario.createUser(user);
 
         usuario.resetUsers();
-        expect(usuario.getAllUsers()).to.length(0); // assert
+        assert.strictEqual(usuario.getAllUsers().length, 0);
     });
 });
