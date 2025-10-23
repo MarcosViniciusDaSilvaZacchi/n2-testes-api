@@ -1,77 +1,68 @@
-// src/comments.js
+
+
+const { getUserById } = require('./user');
+const { getPhotoById } = require('./gallery');
 
 const comentarios = [];
-let nextComentarioId = 1; // Para gerar IDs automaticamente
+let proximoIdComentario = 1;
 
-// Cria um comentário fake e adiciona ao array (não persiste de verdade)
-function criarComentarioFake(dados) {
-  if (!dados || !dados.body || !dados.email) {
-    throw new Error("Dados inválidos para criar comentário");
+
+function criarComentario(photoId, dadosComentario) {
+  if (!photoId || !dadosComentario || !dadosComentario.conteudo || !dadosComentario.idAutor) {
+    throw new Error("Preencha todos os dados do comentário corretamente!");
   }
 
+  const usuario = getUserById(dadosComentario.idAutor);
+  if (!usuario) throw new Error("Usuário (autor) não encontrado.");
+
+  const foto = getPhotoById(photoId);
+  if (!foto) throw new Error("Foto não encontrada.");
+
   const novoComentario = {
-    id: nextComentarioId++,
-    body: dados.body,
-    email: dados.email,
-    postId: dados.postId || 0,
-    createdAt: new Date()
+    id: proximoIdComentario++,
+    idFoto: photoId,
+    conteudo: dadosComentario.conteudo,
+    idAutor: dadosComentario.idAutor,
+    dataCriacao: new Date()
   };
 
+  foto.comments.push(novoComentario);
   comentarios.push(novoComentario);
-  return novoComentario;
+
+  return "Comentário criado com sucesso!";
 }
 
-// Remove um comentário pelo ID (simulação)
-function apagarComentario(id) {
-  if (!id) throw new Error("ID inválido");
-
-  const index = comentarios.findIndex(c => c.id === id);
-  if (index === -1) throw new Error("Comentário não encontrado");
-
-  comentarios.splice(index, 1);
-  return true;
+/**
+ * Retorna todos os comentários de uma foto.
+ */
+function listarComentariosPorFoto(photoId) {
+  const foto = getPhotoById(photoId);
+  if (!foto) throw new Error("Foto não encontrada.");
+  return foto.comments;
 }
 
-// Lista todos os comentários (assíncrono, simula requisição)
-async function listarComentarios() {
-  return Promise.resolve([...comentarios]);
+/**
+ * Deleta um comentário específico de uma foto.
+ */
+function deletarComentario(photoId, comentarioId) {
+  const foto = getPhotoById(photoId);
+  if (!foto) throw new Error("Foto não encontrada.");
+
+  const index = foto.comments.findIndex(c => c.id === comentarioId);
+  if (index === -1) throw new Error("Comentário não encontrado.");
+
+  foto.comments.splice(index, 1);
+  return "Comentário excluído com sucesso!";
 }
 
-// Busca um comentário por ID (assíncrono, simula requisição)
-async function buscarComentarioPorId(id) {
-  if (!id) throw new Error("ID é obrigatório");
-
-  const comentario = comentarios.find(c => c.id === id);
-  if (!comentario) throw new Error("Comentário não encontrado");
-
-  return Promise.resolve(comentario);
-}
-
-// Filtra comentários por postId (assíncrono, simula requisição)
-async function filtrarComentariosPorPostId(postId) {
-  if (!postId) throw new Error("postId é obrigatório");
-
-  const filtrados = comentarios.filter(c => c.postId === postId);
-  return Promise.resolve(filtrados);
-}
-
-// Limpa comentários e reseta IDs (útil para testes)
-function resetComentarios() {
+function resetarComentarios() {
   comentarios.length = 0;
-  nextComentarioId = 1;
-}
-
-// Função assíncrona para ser mockada com Sinon (simula API externa)
-async function fetchComentariosFromApi() {
-  return Promise.resolve([]);
+  proximoIdComentario = 1;
 }
 
 module.exports = {
-  criarComentarioFake,
-  apagarComentario,
-  listarComentarios,
-  buscarComentarioPorId,
-  filtrarComentariosPorPostId,
-  resetComentarios,
-  fetchComentariosFromApi
+  criarComentario,
+  listarComentariosPorFoto,
+  deletarComentario,
+  resetarComentarios
 };

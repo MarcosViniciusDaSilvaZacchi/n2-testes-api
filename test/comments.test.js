@@ -1,158 +1,105 @@
-// test/comments.test.js
 
 const chai = require('chai');
 const sinon = require('sinon');
-
 const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
-const commentsModule = require('../src/comments.js'); // Para o Sinon
-const {
-  criarComentarioFake,
-  apagarComentario,
-  resetComentarios,
-  listarComentarios,
-  buscarComentarioPorId,
-  filtrarComentariosPorPostId
-} = commentsModule;
+const { 
+  criarComentario, 
+  listarComentariosPorFoto, 
+  deletarComentario, 
+  resetarComentarios 
+} = require('../src/comments');
 
-describe('Gerenciamento de Comentários', () => {
+const { 
+  createUser, 
+  resetUsers 
+} = require('../src/user');
 
-  // Limpa comentários antes de cada teste
+const { 
+  uploadPhoto, 
+  resetPhotos 
+} = require('../src/gallery');
+
+describe("Gerenciamento de Comentários", () => {
+
   beforeEach(() => {
-    resetComentarios();
+    resetarComentarios();
+    resetUsers();
+    resetPhotos();
+
+    createUser({ id: 1, name: "Yan", userName: "yanc", password: "123", email: "yan@email.com" });
+    createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
+
+    uploadPhoto({ imageUrl: "teste.jpg", description: "Foto teste", authorId: 1 });
   });
 
-  // =========================
+  // ==========================
   // Testes com EXPECT
-  // =========================
-  describe('Funções de Criação e Busca (com EXPECT)', () => {
-    it('deve criar um comentário fake com sucesso', () => {
-      const dados = { body: 'Comentário teste', email: 'teste@ex.com' };
-      const comentario = criarComentarioFake(dados);
-      expect(comentario).to.be.an('object');
-      expect(comentario).to.have.property('body', 'Comentário teste');
-      expect(comentario).to.have.property('email', 'teste@ex.com');
-      expect(comentario.id).to.be.a('number');
+  // ==========================
+  describe("Criação de Comentários", () => {
+    it("deve criar um comentário em uma foto com sucesso", () => {
+      const resultado = criarComentario(1, { conteudo: "Linda foto!", idAutor: 2 });
+      expect(resultado).to.equal("Comentário criado com sucesso!");
     });
 
-    it('deve lançar erro se dados forem inválidos', () => {
-      expect(() => criarComentarioFake({})).to.throw('Dados inválidos para criar comentário');
-      expect(() => criarComentarioFake(null)).to.throw('Dados inválidos para criar comentário');
+    it("deve lançar erro se faltar dados obrigatórios", () => {
+      expect(() => criarComentario()).to.throw("Preencha todos os dados do comentário corretamente!");
     });
 
-    it('deve buscar um comentário por ID (mockado)', async () => {
-      const stub = sinon.stub(commentsModule, 'buscarComentarioPorId').resolves({ id: 1, body: 'Comentário 1' });
-      const result = await commentsModule.buscarComentarioPorId(1);
-      expect(result).to.have.property('id', 1);
-      stub.restore();
+    it("deve lançar erro se o autor não existir", () => {
+      expect(() => criarComentario(1, { conteudo: "Oi", idAutor: 999 }))
+        .to.throw("Usuário (autor) não encontrado.");
     });
 
-    it('deve filtrar comentários por postId (mockado)', async () => {
-      const stub = sinon.stub(commentsModule, 'filtrarComentariosPorPostId').resolves([{ id: 2, postId: 1 }]);
-      const result = await commentsModule.filtrarComentariosPorPostId(1);
-      expect(result).to.be.an('array');
-      expect(result[0]).to.have.property('postId', 1);
-      stub.restore();
-    });
-
-    it('listarComentarios deve retornar array (mockado)', async () => {
-      const stub = sinon.stub(commentsModule, 'listarComentarios').resolves([{ id: 1, body: 'Comentário 1' }]);
-      const result = await commentsModule.listarComentarios();
-      expect(result).to.be.an('array');
-      stub.restore();
+    it("deve lançar erro se a foto não existir", () => {
+      expect(() => criarComentario(99, { conteudo: "Foto não existe", idAutor: 2 }))
+        .to.throw("Foto não encontrada.");
     });
   });
 
-  // =========================
+  // ==========================
   // Testes com SHOULD
-  // =========================
-  describe('Funções de Modificação (com SHOULD)', () => {
-    it('deve apagar um comentário com sucesso', () => {
-      const comentario = criarComentarioFake({ body: 'Teste', email: 'a@a.com' });
-      apagarComentario(comentario.id).should.be.true;
+  // ==========================
+  describe("Listagem de Comentários", () => {
+    it("deve listar comentários corretamente", () => {
+      criarComentario(1, { conteudo: "Teste 1", idAutor: 2 });
+      criarComentario(1, { conteudo: "Teste 2", idAutor: 2 });
+      const lista = listarComentariosPorFoto(1);
+      lista.should.have.lengthOf(2);
     });
 
-    it('deve lançar erro ao apagar comentário sem ID', () => {
-      (() => apagarComentario()).should.throw('ID inválido');
+    it("deve lançar erro ao listar comentários de foto inexistente", () => {
+      (() => listarComentariosPorFoto(99)).should.throw("Foto não encontrada.");
     });
   });
 
-  // =========================
+  // ==========================
   // Testes com ASSERT
-  // =========================
-  describe('Testes de Validação e Filtros (com ASSERT)', () => {
-    it('ID de comentário criado deve ser número', () => {
-      const comentario = criarComentarioFake({ body: 'Teste', email: 'a@a.com' });
-      assert.isNumber(comentario.id);
+  // ==========================
+  describe("Exclusão de Comentários", () => {
+    it("deve excluir um comentário corretamente", () => {
+      criarComentario(1, { conteudo: "Remover este", idAutor: 2 });
+      const mensagem = deletarComentario(1, 1);
+      assert.strictEqual(mensagem, "Comentário excluído com sucesso!");
     });
 
-    it('deve lançar erro ao buscar comentário sem ID', async () => {
-      try {
-        await buscarComentarioPorId();
-        assert.fail('Deveria lançar erro');
-      } catch (err) {
-        assert.strictEqual(err.message, 'ID é obrigatório');
-      }
-    });
-
-    it('deve lançar erro ao filtrar sem postId', async () => {
-      try {
-        await filtrarComentariosPorPostId();
-        assert.fail('Deveria lançar erro');
-      } catch (err) {
-        assert.strictEqual(err.message, 'postId é obrigatório');
-      }
+    it("deve lançar erro ao tentar excluir um comentário que não existe", () => {
+      assert.throws(() => deletarComentario(1, 999), "Comentário não encontrado.");
     });
   });
 
-  // =========================
+  // ==========================
   // Testes com SINON
-  // =========================
-  describe('Testes de API Mockada com SINON', () => {
-    let listarStub, buscarStub, filtrarStub;
-
-    beforeEach(() => {
-      listarStub = sinon.stub(commentsModule, 'listarComentarios').resolves([]);
-      buscarStub = sinon.stub(commentsModule, 'buscarComentarioPorId').resolves({ id: 1, body: 'Teste' });
-      filtrarStub = sinon.stub(commentsModule, 'filtrarComentariosPorPostId').resolves([]);
-    });
-
-    afterEach(() => {
-      listarStub.restore();
-      buscarStub.restore();
-      filtrarStub.restore();
-    });
-
-    it('listarComentarios deve ser chamado uma vez', async () => {
-      await commentsModule.listarComentarios();
-      assert.isTrue(listarStub.calledOnce);
-    });
-
-    it('buscarComentarioPorId deve retornar dados mockados', async () => {
-      const result = await commentsModule.buscarComentarioPorId(1);
-      expect(result).to.have.property('id', 1);
-    });
-
-    it('filtrarComentariosPorPostId deve retornar array mockado', async () => {
-      const result = await commentsModule.filtrarComentariosPorPostId(1);
-      assert.isArray(result);
-    });
-
-    it('buscarComentarioPorId deve lançar erro mockado', async () => {
-      buscarStub.rejects(new Error('Erro mockado'));
-      try {
-        await commentsModule.buscarComentarioPorId(1);
-        assert.fail('Deveria lançar erro');
-      } catch (err) {
-        err.message.should.equal('Erro mockado');
-      }
-    });
-
-    it('listarComentarios chamado sem argumentos retorna array', async () => {
-      const result = await commentsModule.listarComentarios();
-      assert.isArray(result);
+  // ==========================
+  describe("Sinon - monitorando funções", () => {
+    it("deve verificar se getUserById foi chamado", () => {
+      const userModule = require('../src/user');
+      const spy = sinon.spy(userModule, 'getUserById');
+      criarComentario(1, { conteudo: "Verificando spy", idAutor: 2 });
+      assert.isTrue(spy.called);
+      spy.restore();
     });
   });
 });
