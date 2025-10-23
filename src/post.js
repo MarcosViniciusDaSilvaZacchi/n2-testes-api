@@ -33,8 +33,9 @@ function getPostDate(userId, date){
 
 function getAllPostCategory(category){
     if(!user) return[];
-    return user.posts.filter(category);
+    return posts.filter(category);
 }
+
 
 
 module.export = {
