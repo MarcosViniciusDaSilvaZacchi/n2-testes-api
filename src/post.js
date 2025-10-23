@@ -25,14 +25,14 @@ function getPostCategory(userId, category){
     return user.posts.filter(category);
 }
 
-function getPostDate(userId, date){
-    const user = getUser.getUserById(userId);
-    if(!user) return[];
-    return user.posts.filter(date);
+function getPostDate(startDate, endDate){
+    return posts.filter(p =>{
+        p.createAt >= startDate &&
+        p.createAt <= endDate
+    });
 }
 
 function getAllPostCategory(category){
-    if(!user) return[];
     return posts.filter(category);
 }
 
