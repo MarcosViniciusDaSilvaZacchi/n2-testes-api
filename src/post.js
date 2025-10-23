@@ -19,9 +19,29 @@ function getPosts(userId){
     return[...user.posts];
 }
 
+function getPostCategory(userId, category){
+    const user = getUser.getUserById(userId);
+    if(!user) return[];
+    return user.posts.filter(category);
+}
+
+function getPostDate(userId, date){
+    const user = getUser.getUserById(userId);
+    if(!user) return[];
+    return user.posts.filter(date);
+}
+
+function getAllPostCategory(category){
+    if(!user) return[];
+    return user.posts.filter(category);
+}
+
 
 module.export = {
     addPost,
     removePost,
-    getPosts
+    getPosts,
+    getPostCategory,
+    getPostDate,
+    getAllPostCategory
 }
