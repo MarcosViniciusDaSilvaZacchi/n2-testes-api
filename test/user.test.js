@@ -1,12 +1,10 @@
 const sinon = require('sinon');
 const chai = require('chai');
-//const chaiHttp = require('chai-http').default;
 const usuario = require('../src/user.js');
 
 const expect = chai.expect;
 const assert = chai.assert;
 chai.should();
-//chai.use(chaiHttp);
 
 beforeEach(() => {
     usuario.resetUsers();
@@ -24,7 +22,7 @@ describe('createUser', () => {
         usuario.createUser(user);
 
         const listUser = usuario.getAllUsers();
-        expect(listUser).to.length(1);
+        expect(listUser).to.be.lengthOf(1);
         expect(listUser[0]).to.deep.equal({
             id: 1,
             name: 'Carlos',
@@ -162,7 +160,7 @@ describe('getAllUsers', () => {
         });
         
         const listUser = usuario.getAllUsers();
-        expect(listUser).to.length(2);
+        expect(listUser).to.be.lengthOf(2);
         expect(listUser[0]).to.contain({id: 1, userName: 'Marcelinho123'});
     });
 
@@ -226,7 +224,7 @@ describe('getUsersByName', () => {
         });
 
         const listUser = usuario.getUsersByName('Marcelo');
-        expect(listUser).to.length(2);
+        expect(listUser).to.be.lengthOf(2);
         expect(listUser[0]).to.contain({id: 1, name: 'Marcelo'});
         expect(listUser[1]).to.contain({id: 3, name: 'Marcelo'});
 
@@ -366,7 +364,7 @@ describe('deleteUser', () => {
         });
 
         usuario.deleteUser(1);
-        expect(usuario.getAllUsers()).to.length(1);
+        expect(usuario.getAllUsers()).to.be.lengthOf(1);
         expect(usuario.getUserById(1)).to.be.undefined;
     });
 

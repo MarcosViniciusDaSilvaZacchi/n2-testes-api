@@ -29,7 +29,7 @@ function getUserById(id){
 }
 
 function getUsersByName(name){
- const usersList = users
+  const usersList = users
                     .filter(u => u.name.toLowerCase().includes(name.toLowerCase()))
                     .map(({ password, ...userWithoutPassword }) => userWithoutPassword);
 
