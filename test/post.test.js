@@ -175,11 +175,14 @@ describe("searchPost()",()=>{
         const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
         const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
 
-        const postArray = [post1,post2]
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
 
         const postagensTotais = postagem.searchPosts(userId);
 
-        expect (postagem.searchPosts(userId)).to.have.lengthOf(2);
+        expect (postagensTotais).to.have.lengthOf(2);
+
+        const postArray = [post1, post2];
 
         expect(postagensTotais).to.deep.equal(postArray);
     });
