@@ -19,9 +19,30 @@ function getPosts(userId){
     return[...user.posts];
 }
 
+function getPostCategory(userId, category){
+    const user = getUser.getUserById(userId);
+    if(!user) return[];
+    return user.posts.filter(category);
+}
+
+function getPostDate(startDate, endDate){
+    return posts.filter(p =>{
+        p.createAt >= startDate &&
+        p.createAt <= endDate
+    });
+}
+
+function getAllPostCategory(category){
+    return posts.filter(category);
+}
+
+
 
 module.export = {
     addPost,
     removePost,
-    getPosts
+    getPosts,
+    getPostCategory,
+    getPostDate,
+    getAllPostCategory
 }
