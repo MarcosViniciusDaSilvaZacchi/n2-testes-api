@@ -22,7 +22,7 @@ function getPosts(userId){
 function getPostCategory(userId, category){
     const user = getUser.getUserById(userId);
     if(!user) return[];
-    return user.posts.filter(category);
+    return user.posts.filter(post => user.post.category === category);
 }
 
 function getPostDate(startDate, endDate){
@@ -33,7 +33,7 @@ function getPostDate(startDate, endDate){
 }
 
 function getAllPostCategory(category){
-    return posts.filter(category);
+    return posts.filter(post => post.category === category);
 }
 
 
