@@ -85,5 +85,79 @@ describe("addPost", ()=>{
 });
 
 describe("removePost",()=>{
-    
+    it("Deve remover um post de um usuário específico",()=>{
+        const user = {
+            id: 35,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 35;
+
+        const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
+
+        expect (postagem.searchPosts(userId)).to.have.lengthOf(2);
+
+        postagem.removePost(userId,1);
+
+        const postagensRestantes = postagem.searchPosts(userId);
+
+        expect (postagem.searchPosts(userId)).to.have.lengthOf(1);
+
+        expect(postagensRestantes[0]).to.deep.equal(post1);
+    });
+    it("Deve lançar erro ao excluir post caso usuário não exista",()=>{
+        const userId = 10;
+        expect(()=>{
+            postagem.removePost(userId,1);
+        }).to.throw("Post não encontrado.");
+    });
+    it("Deve lançar erro caso o index seja menor do que tamanho de posts",()=>{
+        const user = {
+            id: 35,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 35;
+
+        const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
+
+        expect(()=>{
+            postagem.removePost(userId,-1);
+        }).to.throw("Post não encontrado.");
+    })
+    it("Deve lançar erro caso o index seja maio do que o tamanho de posts",()=>{
+        const user = {
+            id: 35,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 35;
+
+        const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
+
+        expect(()=>{
+            postagem.removePost(userId,2);
+        }).to.throw("Post não encontrado.");
+    })
 });
