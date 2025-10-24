@@ -26,9 +26,9 @@ function getPostCategory(userId, category){
 }
 
 function getPostDate(startDate, endDate){
-    return posts.filter(p =>{
-        p.createAt >= startDate &&
-        p.createAt <= endDate
+    return posts.filter(post =>{
+        post.createAt >= startDate &&
+        post.createAt <= endDate
     });
 }
 

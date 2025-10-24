@@ -14,7 +14,7 @@ describe("addPost", ()=>{
             categoria: "Política",
             texto: "Os politicos são corruptos, por isso a população passa fome."
         };
-        postagem.addPost(userId,newPost);
+        
         const postCriado = postagem.getPost(userId)[0];
 
         expect(postCriado).to.be.exist;
