@@ -1,10 +1,8 @@
-const sinon = require('sinon');
 const chai = require('chai');
 const usuario = require('../src/user.js');
 const postagem = require('../src/post.js');
 
 const expect = chai.expect;
-const assert = chai.assert;
 
 beforeEach(() => {
     usuario.resetUsers();
@@ -161,3 +159,28 @@ describe("removePost",()=>{
         }).to.throw("Post não encontrado.");
     })
 });
+
+describe("searchPost()",()=>{
+    it("Deve retornar o conteudo do post",()=>{
+        const user = {
+            id: 35,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 35;
+
+        const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        const postArray = [post1,post2]
+
+        const postagensTotais = postagem.searchPosts(userId);
+
+        expect (postagem.searchPosts(userId)).to.have.lengthOf(2);
+
+        expect(postagensTotais).to.deep.equal(postArray);
+    });
+})
