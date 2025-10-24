@@ -186,4 +186,11 @@ describe("searchPost()",()=>{
 
         expect(postagensTotais).to.deep.equal(postArray);
     });
+    it("Deve retornar uma array de post vazia",()=>{
+        const userId = 35;
+
+        const postagensTotais = postagem.searchPosts(userId);
+
+        expect (postagensTotais).to.have.lengthOf(0);
+    });
 })
