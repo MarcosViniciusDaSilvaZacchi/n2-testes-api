@@ -83,3 +83,7 @@ describe("addPost", ()=>{
         
     });
 });
+
+describe("removePost",()=>{
+    
+});
