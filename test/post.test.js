@@ -218,7 +218,7 @@ describe("serachPostCategoria",()=>{
         expect (postagem.searchPostCategory(userId,category)).to.have.lengthOf(1);
 
     });
-    it("Deve lançar um error ao tentar trazer um post que não tem usuário",()=>{
+    it("Deve retornar uma string vazia",()=>{
         const userId = 10;
         const category = "Esportes";
         expect (()=>{postagem.searchPostCategory(userId,category)}).to.have.lengthOf(0);
