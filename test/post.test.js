@@ -88,6 +88,18 @@ describe("createPost", ()=>{
         }).to.throw("ID inválido");
     });
 
+    it("Deve lançar um erro caso o 'id' seja menor ou igual a 0", ()=>{
+        const invalidId = {
+            id: -1,
+            category: "Política",
+            content: "Conteúdo Válido",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidId)
+        }).to.throw("ID inválido");
+    });
+
     it("Deve lançar um erro caso o 'id' já esteja cadastrado", ()=>{
         const post = {
             id: 10,
