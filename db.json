@@ -1,0 +1,155 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "João Silva",
+      "userName": "joaozito",
+      "password": "hashedpassword123",
+      "email": "joao@exemplo.com",
+      "gallery": [
+        {
+          "id": 101,
+          "imageUrl": "/images/joao/praia.jpg",
+          "description": "Pôr do sol maravilhoso na praia.",
+          "createdAt": "2024-10-23T09:00:00Z",
+          "comments": [
+            {
+              "id": 301,
+              "idAutor": 2,
+              "content": "Foto incrível!",
+              "createdAt": "2024-10-23T10:00:00Z"
+            }
+          ]
+        }
+      ],
+      "posts": [
+        {
+          "id": 201,
+          "category": "Tecnologia",
+          "content": "Minha análise inicial sobre a nova linguagem de programação.",
+          "createdAt": "2024-10-25T10:00:00Z",
+          "comments": [
+            {
+              "id": 302,
+              "idAutor": 2,
+              "content": "Ótima review, João!",
+              "createdAt": "2024-10-25T10:15:00Z"
+            }
+          ]
+        },
+        {
+          "id": 202,
+          "category": "Viagem",
+          "content": "Fotos incríveis da minha viagem para a Patagônia!",
+          "createdAt": "2024-10-24T15:30:00Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Maria Souza",
+      "userName": "marisouza",
+      "password": "hashedpassword456",
+      "email": "maria@exemplo.com",
+      "gallery": [
+        {
+          "id": 102,
+          "imageUrl": "/images/maria/montanha.jpg",
+          "description": "Chegamos ao pico da montanha!",
+          "createdAt": "2024-10-24T12:00:00Z",
+          "comments": []
+        }
+      ],
+      "posts": [
+        {
+          "id": 203,
+          "category": "Culinária",
+          "content": "Receita fácil de pão caseiro. Fica uma delícia!",
+          "createdAt": "2024-10-25T11:45:00Z",
+          "comments": [
+            {
+              "id": 303,
+              "idAutor": 1,
+              "content": "Vou tentar fazer essa receita!",
+              "createdAt": "2024-10-25T12:00:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Pedro Alvares",
+      "userName": "pedrao",
+      "password": "hashedpassword789",
+      "email": "pedro@exemplo.com",
+      "gallery": [
+        {
+          "id": 103,
+          "imageUrl": "/images/pedro/cidade.jpg",
+          "description": "Vista noturna do centro da cidade.",
+          "createdAt": "2024-10-22T19:30:00Z",
+          "comments": []
+        }
+      ],
+      "posts": [
+        {
+          "id": 204,
+          "category": "Música",
+          "content": "Review do novo álbum de rock progressivo.",
+          "createdAt": "2024-10-25T08:00:00Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Ana Clara",
+      "userName": "anaclara_dev",
+      "password": "hashedpassword012",
+      "email": "ana@exemplo.com",
+      "gallery": [],
+      "posts": [
+        {
+          "id": 205,
+          "category": "Programação",
+          "content": "Dicas para otimizar o desempenho do JavaScript.",
+          "createdAt": "2024-10-25T13:00:00Z",
+          "comments": [
+            {
+              "id": 304,
+              "idAutor": 3,
+              "content": "Muito útil, Ana! Já apliquei uma das dicas.",
+              "createdAt": "2024-10-25T13:10:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Lucas Fernandes",
+      "userName": "luf_fotografia",
+      "password": "hashedpassword345",
+      "email": "lucas@exemplo.com",
+      "gallery": [
+        {
+          "id": 104,
+          "imageUrl": "/images/lucas/natureza.jpg",
+          "description": "Primeira foto macro que capturei. Adorei o resultado!",
+          "createdAt": "2024-10-25T07:15:00Z",
+          "comments": []
+        },
+        {
+          "id": 105,
+          "imageUrl": "/images/lucas/retrato.jpg",
+          "description": "Retrato em estúdio.",
+          "createdAt": "2024-10-24T09:00:00Z",
+          "comments": []
+        }
+      ],
+      "posts": []
+    }
+  ]
+}
