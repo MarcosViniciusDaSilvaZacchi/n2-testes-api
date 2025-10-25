@@ -1,68 +1,120 @@
+const { getUserById } = require('./user.js');
+const { getPhotoById } = require('./gallery.js');
+const { searchPostID } = require('./post.js');
 
+/**
+ * Cria e adiciona uma nova foto à galeria.
+ * @param {object} dadosComentario - Objeto com { id, conteudo, idAutor, dataCriacao }
+ */
+function criarComentario(targetUserId, target, targetId, dadosComentario) {
 
-const { getUserById } = require('./user');
-const { getPhotoById } = require('./gallery');
+  if (!targetUserId || !target || !targetId || targetId <= 0) 
+    throw new Error("Parâmetros de destino inválidos");
 
-const comentarios = [];
-let proximoIdComentario = 1;
+  const targetUser = getUserById(targetUserId);
+  if (!targetUser) throw new Error("Usuário (alvo do comentário) não encontrado.");
 
-
-function criarComentario(photoId, dadosComentario) {
-  if (!photoId || !dadosComentario || !dadosComentario.conteudo || !dadosComentario.idAutor) {
-    throw new Error("Preencha todos os dados do comentário corretamente!");
-  }
-
-  const usuario = getUserById(dadosComentario.idAutor);
-  if (!usuario) throw new Error("Usuário (autor) não encontrado.");
-
-  const foto = getPhotoById(photoId);
-  if (!foto) throw new Error("Foto não encontrada.");
+  if (!dadosComentario || !dadosComentario.id || !dadosComentario.conteudo || !dadosComentario.idAutor || !dadosComentario.dataCriacao)
+    throw new Error("Dados do comentário inválidos");
+  
+  const autor = getUserById(dadosComentario.idAutor);
+  if (!autor) throw new Error("Usuário (autor do comentário) não encontrado.");
 
   const novoComentario = {
-    id: proximoIdComentario++,
-    idFoto: photoId,
-    conteudo: dadosComentario.conteudo,
+    id: dadosComentario.id,
+    conteudo: dadosComentario.conteudo.trim(),
     idAutor: dadosComentario.idAutor,
     dataCriacao: new Date()
   };
 
-  foto.comments.push(novoComentario);
-  comentarios.push(novoComentario);
+  const targetType = target.toLowerCase();
+  let contentTarget = null;
 
-  return "Comentário criado com sucesso!";
+  if (targetType === 'photo' || targetType === 'foto') {
+    contentTarget = getPhotoById(targetUserId, targetId); 
+
+    if (!contentTarget) throw new Error("Foto não encontrada");
+
+  } else if (targetType === 'post') {
+    contentTarget = searchPostID(targetUserId, targetId); 
+
+    if (!contentTarget) throw new Error("Post não encontrado");
+
+  } else {
+    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+  }
+
+  if (!contentTarget.comments) contentTarget.comments = [];
+
+  if (contentTarget.comments.find(c => c.id === dadosComentario.id))
+      throw new Error("ID de comentário já está cadastrado neste conteúdo.");
+
+  contentTarget.comments.push(novoComentario);
 }
 
-/**
- * Retorna todos os comentários de uma foto.
- */
-function listarComentariosPorFoto(photoId) {
-  const foto = getPhotoById(photoId);
+function procuraComentario(targetUserId, targetType, targetId, comentarioId) {
+  if (targetType === 'photo' || targetType === 'foto') {
+    const comments = listarComentariosPorFoto(targetUserId, targetId);
+
+    return comments.find(c => c.id === comentarioId);
+
+  } else if (targetType === 'post') {
+    const comments = listarComentariosPorPostagem(targetUserId, targetId);
+
+    return comments.find(c => c.id === comentarioId);
+
+  } else {
+    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+  }
+}
+
+function listarComentariosPorFoto(targetUserId, photoId) {
+  const targetUser = getUserById(targetUserId);
+  if (!targetUser) throw new Error("Usuário (alvo do comentário) não encontrado.");
+
+  const foto = getPhotoById(targetUser.id, photoId);
   if (!foto) throw new Error("Foto não encontrada.");
+
   return foto.comments;
+}
+
+function listarComentariosPorPostagem(targetUserId, postId) {
+  const targetUser = getUserById(targetUserId);
+  if (!targetUser) throw new Error("Usuário (alvo do comentário) não encontrado.");
+
+  const postagem = searchPostID(targetUser.id, postId); 
+  if (!postagem) throw new Error("postagem não encontrada.");
+
+  return postagem.comments;
 }
 
 /**
  * Deleta um comentário específico de uma foto.
  */
-function deletarComentario(photoId, comentarioId) {
-  const foto = getPhotoById(photoId);
-  if (!foto) throw new Error("Foto não encontrada.");
+function deletarComentario(targetUserId, targetType, targetId, comentarioId) {
+  if (targetType === 'photo' || targetType === 'foto') {
+    const comments = listarComentariosPorFoto(targetUserId, targetId)
 
-  const index = foto.comments.findIndex(c => c.id === comentarioId);
-  if (index === -1) throw new Error("Comentário não encontrado.");
+    const index = comments.findIndex(c => c.id === comentarioId);
+    if (index === -1) throw new Error("Comentário não encontrado.");
+    comments.splice(index, 1);
 
-  foto.comments.splice(index, 1);
-  return "Comentário excluído com sucesso!";
-}
+  } else if (targetType === 'post') {
+    const comments = listarComentariosPorPostagem(targetUserId, postId)
 
-function resetarComentarios() {
-  comentarios.length = 0;
-  proximoIdComentario = 1;
+    const index = comments.findIndex(c => c.id === comentarioId);
+    if (index === -1) throw new Error("Comentário não encontrado.");
+    comments.splice(index, 1);
+
+  } else {
+    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+  }
 }
 
 module.exports = {
   criarComentario,
+  procuraComentario,
   listarComentariosPorFoto,
-  deletarComentario,
-  resetarComentarios
+  listarComentariosPorPostagem,
+  deletarComentario
 };

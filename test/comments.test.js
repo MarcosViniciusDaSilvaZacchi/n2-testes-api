@@ -4,30 +4,43 @@ const expect = chai.expect;
 const should = chai.should();
 const assert = chai.assert;
 
-const { criarComentario, listarComentariosPorFoto, deletarComentario, resetarComentarios } = require('../src/comments');
-const { createUser, resetUsers } = require('../src/user');
-const { uploadPhoto, resetPhotos } = require('../src/gallery');
+const comments = require('../src/comments');
+const { createUser, resetUsers, getUserById } = require('../src/user');
+const photo = require('../src/gallery');
+const post = require('../src/post');
 
 describe("Testes de Comentários", () => {
 
   beforeEach(() => {
-    resetarComentarios();
     resetUsers();
-    resetPhotos();
 
     createUser({ id: 1, name: "Yan", userName: "yanc", password: "123", email: "yan@email.com" });
-    createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
+    post.createPost(1, { id: 1, createdAt: "2025/01/10", category: "Tecnologia", content: "Novidades do JS" });
+    post.createPost(1, { id: 2, createdAt: "2025/01/11", category: "Esportes",   content: "Resultado do jogo" });
 
-    uploadPhoto({ imageUrl: "foto.jpg", description: "Foto teste", authorId: 1 });
+    createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
+    post.createPost(2, { id: 1, createdAt: "2025/03/12", category: "Culinaria", content: "Receita prática" });
+    post.createPost(2, { id: 2, createdAt: "2025/04/01", category: "Política",  content: "Propaganda política" });
   });
 
-  describe("Criar comentário", () => {
-    it("deve criar comentário com sucesso", () => {
-      const resultado = criarComentario(1, { conteudo: "Muito boa!", idAutor: 2 });
-      expect(resultado).to.equal("Comentário criado com sucesso!");
+  describe("criarComentario()", () => {
+    it("Cria comentário para postagem", () => {
+        comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+        });
+
+        const comentarioCriado = comments.procuraComentario(1, 'post', 2, 1);
+        expect(comentarioCriado).to.exist;
+        
+        const postagem = post.searchPostID(1, 2); 
+        expect(postagem.comments).to.have.lengthOf(1);
+        expect(postagem.comments[0]).to.deep.include(comentarioCriado);
     });
 
-    it("deve dar erro se faltar dados", () => {
+    it.only("deve dar erro se faltar dados", () => {
       expect(() => criarComentario()).to.throw("Preencha todos os dados do comentário corretamente!");
     });
 
