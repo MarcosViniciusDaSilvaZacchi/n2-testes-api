@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "chai-http": "^4.4.0",
     "chai": "^4.5.0",
+    "chai-http": "^4.4.0",
     "mocha": "^11.7.4",
     "nyc": "^17.1.0",
     "sinon": "^21.0.0"
