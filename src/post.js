@@ -27,15 +27,10 @@ function searchPostCategory(userId, category){
     return user.posts.filter(post => post.category === category);
 }
 
-function searchPostDate(startDate, endDate){
-    return posts.filter(post =>{
-        post.createAt >= startDate &&
-        post.createAt <= endDate
-    });
-}
-
-function searchAllPostCategory(category){
-    return posts.filter(post => post.category === category);
+function searchPostID(userId, postId){
+    const user = getUser.getUserById(userId);
+    if(!user) return[];
+    return user.posts.filter(post => post.id === postId);
 }
 
 module.exports = {
@@ -43,6 +38,5 @@ module.exports = {
     removePost,
     searchPosts,
     searchPostCategory,
-    searchPostDate,
-    searchAllPostCategory
+    searchPostID
 }

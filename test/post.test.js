@@ -193,4 +193,64 @@ describe("searchPost()",()=>{
 
         expect (postagensTotais).to.have.lengthOf(0);
     });
+});
+
+describe("serachPostCategoria",()=>{
+    it("Deve retornar todos os post com uma categoria especifica",()=>{
+        const user = {
+            id: 5,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 5;
+
+        const post1 = {date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
+
+        const category = "Esportes"
+
+        expect (postagem.searchPostCategory(userId,category)).to.have.lengthOf(1);
+
+    });
+    it("Deve lançar um error ao tentar trazer um post que não tem usuário",()=>{
+        const userId = 10;
+        const category = "Esportes";
+        expect (()=>{postagem.searchPostCategory(userId,category)}).to.have.lengthOf(0);
+    });
+})
+
+describe("serachPostID",()=>{
+    it("Deve retornar um post por ID",()=>{
+        const user = {
+            id: 7,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com'
+        };
+        usuario.createUser(user);
+        const userId = 7;
+
+        const post1 = {id: 10, date: "2025/01/10",category: "Tecnologia",text: "Novidades do JS"};
+        const post2 = {id: 14, date: "2025/01/11",category: "Esportes",text: "Resultado do jogo"};
+
+        postagem.createPost(userId,post1);
+        postagem.createPost(userId,post2);
+
+        const postId = 10;
+
+        expect (postagem.searchPostID(userId,postId)).to.have.lengthOf(1);
+
+    });
+    it("Deve retornar uma array vazia",()=>{
+        const userId = 10;
+        const postId = 3;
+        expect (()=>{postagem.searchPostID(userId,postId)}).to.have.lengthOf(0);
+    });
 })
