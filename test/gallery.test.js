@@ -1,3 +1,5 @@
+// test/gallery.test.js
+
 const chai = require('chai');
 const sinon = require('sinon');
 
@@ -24,7 +26,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
     resetPhotos();
   });
 
-  // Testes com o estilo EXPECT (6 testes)
+  // Testes com o estilo EXPECT (7 testes)
   describe('Funções de Criação e Busca (com EXPECT)', () => {
     it('deve fazer o upload de uma nova foto com sucesso', () => {
       const photoData = { imageUrl: 'http://a.com/1.jpg', description: 'Minha foto', authorId: 1 };
@@ -54,14 +56,22 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
       const invalidData = { description: 'Faltando URL e autor' };
       expect(() => uploadPhoto(invalidData)).to.throw("Dados da foto inválidos");
     });
-    
+
     it('a propriedade createdAt deve ser um objeto Date', () => {
         const newPhoto = uploadPhoto({ imageUrl: 'http://a.com', description: 'Data', authorId: 1 });
         expect(newPhoto.createdAt).to.be.a('Date');
     });
+
+    it('deve lançar um erro ao tentar curtir uma foto que não existe (EXPECT)', () => {
+      const idInexistente = 999;
+      const userId = 100;
+      expect(() => {
+        likePhoto(idInexistente, userId);
+      }).to.throw('Foto não encontrada');
+    });
   });
 
-  // Testes com o estilo SHOULD (6 testes)
+  // Testes com o estilo SHOULD (7 testes)
   describe('Funções de Like e Unlike (com SHOULD)', () => {
     let photo;
     beforeEach(() => {
@@ -88,20 +98,24 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
       const unlikedPhoto = getPhotoById(photo.id);
       unlikedPhoto.likes.should.not.include(100);
     });
-    
+
     it('a lista de likes deve ser um array', () => {
         const result = likePhoto(photo.id, 101);
         result.likes.should.be.an('array');
-    });
-    
-    it('deve lançar erro ao tentar curtir foto que não existe', () => {
-        (() => likePhoto(999, 100)).should.throw('Foto não encontrada');
     });
 
     it('a remoção de um like que não existe não deve quebrar a função', () => {
         unlikePhoto(photo.id, 999);
         const currentPhoto = getPhotoById(photo.id);
         currentPhoto.likes.should.be.an('array').that.is.empty;
+    });
+
+    it('deve lançar erro ao tentar descurtir foto que não existe', () => {
+        const idInexistente = 999;
+        const userId = 100;
+        (() => {
+            unlikePhoto(idInexistente, userId);
+        }).should.throw('Foto não encontrada');
     });
   });
 
@@ -143,7 +157,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
         assert.doesNotThrow(() => deletePhoto(photo.id));
     });
   });
-  
+
   // Testes com o SINON (5 testes)
   describe('Testes de API Mockada com SINON', () => {
     let fetchStub;
@@ -183,7 +197,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
         await galleryModule.fetchPhotosFromApi();
         assert.isTrue(fetchStub.calledWith());
     });
-    
+
     it('o stub deve retornar um array, mesmo que vazio', async () => {
         fetchStub.resolves([]);
         const result = await galleryModule.fetchPhotosFromApi();
