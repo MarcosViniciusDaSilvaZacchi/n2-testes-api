@@ -2,9 +2,9 @@
 
 const usuario = require('./user.js'); // Dependência do módulo User
 
-function uploadPhoto(userId, image) { // Renomeado parâmetro para userId
+function uploadPhoto(userId, image) { 
   const user = usuario.getUserById(userId);
-  if (!user) throw new Error("Usuario não encontrado"); // Corrigido 'new' sem Error
+  if (!user) throw new Error("Usuario não encontrado"); 
 
   // Validações do objeto 'image'
   if (!image || typeof image !== 'object') throw new Error('Dados da imagem inválidos.');

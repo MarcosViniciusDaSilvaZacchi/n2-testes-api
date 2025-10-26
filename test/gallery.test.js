@@ -9,11 +9,11 @@ const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
-// --- Dados de Teste ---
+// Dados de Teste 
 const sampleUser = { id: 1, name: 'Tester', userName: 'tester', password: '123', email: 'tester@test.com', images: [] }; // Adicionado images: []
 const sampleImageData = { id: 15, type: 'image/png', description: 'Sample Photo', createDat: "2024/10/02" }; // Data como string inicialmente
 
-// --- Bloco Principal ---
+// Bloco Principal
 describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
 
     // Hook principal para limpar usuários antes de cada teste
@@ -28,7 +28,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         sinon.restore();
     });
 
-    // --- Testes para uploadPhoto (7 Assert) ---
+    // Testes para uploadPhoto (10 Assert) 
     describe('uploadPhoto com ASSERT', () => {
         it('ASSERT - Deve fazer upload de foto com sucesso', () => {
             const userId = 1;
@@ -75,9 +75,29 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
             const { description, ...invalidImage } = { ...sampleImageData }; // Remove a descrição
             assert.throws(() => gallery.uploadPhoto(sampleUser.id, invalidImage), 'Descrição da imagem não pode ser em branco');
         });
+       
+        it('ASSERT - Deve lançar erro se o objeto image for nulo ou inválido', () => {
+          const userId = 1;
+          assert.throws(() => gallery.uploadPhoto(userId, null), 'Dados da imagem inválidos.');
+          assert.throws(() => gallery.uploadPhoto(userId, 'nao sou objeto'), 'Dados da imagem inválidos.');
+        });
+        it('ASSERT - Deve lançar erro se o ID da imagem for inválido (nulo, não número, zero ou negativo)', () => {
+          const userId = 1;
+          const baseImage = { type: 'image/png', description: 'Desc', createDat: new Date() };
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage }), 'ID da imagem inválido.');// Testa ID faltando
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: null }), 'ID da imagem inválido.'); // Testa ID nulo
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: '10' }), 'ID da imagem inválido.'); // Testa ID como string
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: 0 }), 'ID da imagem inválido.'); // Testa ID zero
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: -5 }), 'ID da imagem inválido.'); // Testa ID negativo
+          });
+        it('ASSERT - Deve lançar erro se createDat estiver faltando', () => {
+          const userId = 1;
+          const invalidImage = { id: 20, type: 'image/png', description: 'Descricao valida' }; // Falta createDat
+          assert.throws(() => gallery.uploadPhoto(userId, invalidImage), 'Data Inválida');
+        });
     });
 
-    // --- Testes para getPhotoById (5 Expect + Sinon) ---
+    // Testes para getPhotoById (5 Expect + Sinon)
     describe('getPhotoById com EXPECT e SINON', () => {
         it('EXPECT - Deve retornar undefined se o ID da imagem não for encontrado', () => {
             gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 }); // Adiciona uma foto
@@ -123,7 +143,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
          });
     });
 
-    // --- Testes para getPhotosByUser (5 Should) ---
+    //Testes para getPhotosByUser (5 Should)
     describe('getPhotosByUser com SHOULD', () => {
         beforeEach(() => {
             // Adiciona múltiplas fotos para o usuário 1 e uma para o usuário 2
@@ -165,15 +185,15 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
     });
 
-    // --- Testes para getPhotosByRangeDate (5 Sinon/variados) ---
+    // Testes para getPhotosByRangeDate (5 Sinon/variados) 
     describe('getPhotosByRangeDate com SINON', () => {
         let getUserStub;
         const fakeUser = {
             id: 1, name: 'Fake', userName: 'fake', /*...*/
             images: [
-                { id: 1, description: 'Foto 1', createDat: new Date(2025, 9, 10) }, // Oct 10
-                { id: 2, description: 'Foto 2', createDat: new Date(2025, 9, 15) }, // Oct 15
-                { id: 3, description: 'Foto 3', createDat: new Date(2025, 9, 20) }  // Oct 20
+                { id: 1, description: 'Foto 1', createDat: new Date(2025, 9, 10) }, 
+                { id: 2, description: 'Foto 2', createDat: new Date(2025, 9, 15) }, 
+                { id: 3, description: 'Foto 3', createDat: new Date(2025, 9, 20) }  
             ]
         };
 
@@ -182,8 +202,8 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
 
         it('SINON - Deve encontrar fotos dentro do intervalo de datas (EXPECT)', () => {
-            const startDate = new Date(2025, 9, 12); // Oct 12
-            const endDate = new Date(2025, 9, 18);   // Oct 18
+            const startDate = new Date(2025, 9, 12);
+            const endDate = new Date(2025, 9, 18); 
             const results = gallery.getPhotosByRangeDate(1, startDate, endDate);
             expect(results).to.have.lengthOf(1);
             expect(results[0].id).to.equal(2);
@@ -216,7 +236,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
     });
 
-    // --- Testes para deletePhoto (5 Should/Assert) ---
+    //Testes para deletePhoto (5 Should/Assert)
     describe('deletePhoto com SHOULD e ASSERT', () => {
         beforeEach(() => {
              gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 });
