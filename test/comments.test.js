@@ -27,7 +27,7 @@ describe("Testes de Comentários", () => {
   });
 
   describe("criarComentario()", () => {
-    it("Cria comentário para postagem", () => {
+    it.only("Cria comentário para postagem", () => {
         comments.criarComentario(1, 'post', 2, {
             id: 1, 
             conteudo: "Muito boa!", 
@@ -39,6 +39,7 @@ describe("Testes de Comentários", () => {
         expect(comentarioCriado).to.exist;
         expect(comentarioCriado).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
         expect(comentarioCriado.id).to.equal(1);
+        expect(comentarioCriado.dataCriacao).to.be.an.instanceOf(Date);
         
         const postagem = post.searchPostID(1, 2); 
         expect(postagem.comments).to.have.lengthOf(1);
@@ -55,6 +56,8 @@ describe("Testes de Comentários", () => {
 
         const comentarioCriado = comments.procuraComentario(2, 'photo', 1, 1);
         expect(comentarioCriado).to.exist;
+        expect(comentarioCriado.id).to.equal(1);
+        expect(comentarioCriado.dataCriacao).to.be.an.instanceOf(Date);
         
         const foto = photo.getPhotoById(2, 1); 
         expect(foto.comments).to.have.lengthOf(1);
@@ -62,9 +65,9 @@ describe("Testes de Comentários", () => {
     });
 
     it("Parâmetros de destino inválidos", () => {
-      (() => comments.criarComentario()).should.throw("Parâmetros de destino inválidos");  // !targetUserId
-      (() => comments.criarComentario(1)).should.throw("Parâmetros de destino inválidos");  // !target
-      (() => comments.criarComentario(1, "post")).should.throw("Parâmetros de destino inválidos");  // !targetId
+      (() => comments.criarComentario()).should.throw("Parâmetros de destino inválidos");               // !targetUserId
+      (() => comments.criarComentario(1)).should.throw("Parâmetros de destino inválidos");              // !target
+      (() => comments.criarComentario(1, "post")).should.throw("Parâmetros de destino inválidos");      // !targetId
       (() => comments.criarComentario(1, "post", -1)).should.throw("Parâmetros de destino inválidos");  // targetId <= 0
     });
 
@@ -243,24 +246,30 @@ describe("Testes de Comentários", () => {
       comments.criarComentario(1, 'post', 1, { id: 2, conteudo: "Maravilhoso!", idAutor: 2, dataCriacao: new Date() });
       comments.criarComentario(1, 'post', 2, { id: 1, conteudo: "Quando foi?",  idAutor: 2, dataCriacao: new Date() });
       const before = comments.listarComentariosPorPostagem(1, 1);
-      assert.equal(before.length, 2);
+      assert.lengthOf(before, 2);
 
       comments.deletarComentario(1, 'post', 1, 2);
+
       const after = comments.listarComentariosPorPostagem(1, 1);
-      assert.equal(after.length, 1);
+      assert.lengthOf(after, 1);
       assert.equal(after[0].id, 1);
+
+      expect(after.map(c => c.id)).to.not.include(2);
     });
 
     it("Exclui um comentário de uma foto", () => {
       comments.criarComentario(1, 'photo', 1, { id: 1, conteudo: "Muito boa!",   idAutor: 2, dataCriacao: new Date() });
       comments.criarComentario(1, 'photo', 1, { id: 2, conteudo: "Maravilhoso!", idAutor: 2, dataCriacao: new Date() });
       const before = comments.listarComentariosPorFoto(1, 1);
-      assert.equal(before.length, 2);
+      assert.lengthOf(before, 2);
 
       comments.deletarComentario(1, 'photo', 1, 2);
+
       const after = comments.listarComentariosPorFoto(1, 1);
-      assert.equal(after.length, 1);
+      assert.lengthOf(after, 1);
       assert.equal(after[0].id, 1);
+
+      expect(after.map(c => c.id)).to.not.include(2);
     });
 
     it("Tipo de 'target' inválido", () => {

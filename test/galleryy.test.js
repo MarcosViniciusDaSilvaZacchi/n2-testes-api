@@ -127,7 +127,7 @@ describe('getPhotoById',()=>{
         sinon.restore();
     })
 });
-describe.only('getPhotosByRangeDate',()=>{
+describe('getPhotosByRangeDate',()=>{
     it('retorna um range imagens com base na data usando stub',()=>{
       const data1 = new Date("2024/10/02").getTime();
       const data2 = new Date("2024/10/15").getTime();
