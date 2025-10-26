@@ -41,7 +41,7 @@ function criarComentario(targetUserId, target, targetId, dadosComentario) {
     if (!contentTarget) throw new Error("Post não encontrado");
 
   } else {
-    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+    throw new Error("Tipo de 'target' inválido.");
   }
 
   if (!contentTarget.comments) contentTarget.comments = [];
@@ -64,7 +64,7 @@ function procuraComentario(targetUserId, targetType, targetId, comentarioId) {
     return comments.find(c => c.id === comentarioId);
 
   } else {
-    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+    throw new Error("Tipo de 'target' inválido.");
   }
 }
 
@@ -83,29 +83,27 @@ function listarComentariosPorPostagem(targetUserId, postId) {
   if (!targetUser) throw new Error("Usuário (alvo do comentário) não encontrado.");
 
   const postagem = searchPostID(targetUser.id, postId); 
-  if (!postagem) throw new Error("postagem não encontrada.");
+  if (!postagem) throw new Error("Postagem não encontrada.");
 
   return postagem.comments;
 }
 
 function deletarComentario(targetUserId, targetType, targetId, comentarioId) {
-  if (targetType === 'photo' || targetType === 'foto') {
-    const comments = listarComentariosPorFoto(targetUserId, targetId)
+  let comments = [];
 
-    const index = comments.findIndex(c => c.id === comentarioId);
-    if (index === -1) throw new Error("Comentário não encontrado.");
-    comments.splice(index, 1);
+  if (targetType === 'photo' || targetType === 'foto') {
+    comments = listarComentariosPorFoto(targetUserId, targetId)
 
   } else if (targetType === 'post') {
-    const comments = listarComentariosPorPostagem(targetUserId, postId)
-
-    const index = comments.findIndex(c => c.id === comentarioId);
-    if (index === -1) throw new Error("Comentário não encontrado.");
-    comments.splice(index, 1);
+    comments = listarComentariosPorPostagem(targetUserId, targetId)
 
   } else {
-    throw new Error("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+    throw new Error("Tipo de 'target' inválido.");
   }
+
+  const index = comments.findIndex(c => c.id === comentarioId);
+  if (index === -1) throw new Error("Comentário não encontrado.");
+  comments.splice(index, 1);
 }
 
 module.exports = {
