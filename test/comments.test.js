@@ -5,21 +5,21 @@ const should = chai.should();
 const assert = chai.assert;
 
 const comments = require('../src/comments');
-const { createUser, resetUsers } = require('../src/user');
+const user = require('../src/user');
 const photo = require('../src/gallery');
 const post = require('../src/post');
 
 describe("Testes de Comentários", () => {
 
   beforeEach(() => {
-    resetUsers();
+    user.resetUsers();
 
-    createUser({ id: 1, name: "Yan", userName: "yanc", password: "123", email: "yan@email.com" });
+    user.createUser({ id: 1, name: "Yan", userName: "yanc", password: "123", email: "yan@email.com" });
     post.createPost(1, { id: 1, createdAt: "2025/01/10", category: "Tecnologia", content: "Novidades do JS" });
     post.createPost(1, { id: 2, createdAt: "2025/01/11", category: "Esportes",   content: "Resultado do jogo" });
     photo.uploadPhoto(1, { id:1, type: 'image/png', description: 'Setup gamer iluminado com teclado RGB e monitor ultrawide', createDat: new Date() } );
 
-    createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
+    user.createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
     post.createPost(2, { id: 1, createdAt: "2025/03/12", category: "Culinaria", content: "Receita prática" });
     post.createPost(2, { id: 2, createdAt: "2025/04/01", category: "Política",  content: "Propaganda política" });
     photo.uploadPhoto(2, { id:1, type: 'image/png', description: 'Bolo de cenoura com cobertura de chocolate — receita da vovó', createDat: new Date() } );
@@ -284,5 +284,4 @@ describe("Testes de Comentários", () => {
       (() => comments.deletarComentario(1, "photo", 1, 99)).should.throw("Comentário não encontrado.");
     });
   });
-
 });
