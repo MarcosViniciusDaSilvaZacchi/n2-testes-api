@@ -1,5 +1,3 @@
-// src/gallery.js
-
 const usuario = require('./user.js'); // Dependência do módulo User
 
 function uploadPhoto(userId, image) { 

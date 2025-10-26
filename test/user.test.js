@@ -111,9 +111,7 @@ describe('createUser', () => {
 });
 
 describe('LogInUser', () => {
-    // TESTE FOI MOVIDO PARA O BLOCO DE MOCKS ABAIXO
-    // it('SINON  - Loga usuário', () => { ... });
-
+    
     it('SHOULD - Usuário não encontrado', () => {
         (() => usuario.logInUser('Error', 'error123')).should.throw('Usuário não encontrado');
     });
@@ -180,7 +178,8 @@ describe('getUserById', () => {
             email: 'carlos@gmail.com'
         });
 
-        expect(usuario.getUserById(1)).to.contain({ id:1, userName: 'Marcelinho123', email: 'marcelo@gmail.com' });
+        expect(usuario.getUserById(1)).to.contain({ id:1, 
+        userName: 'Marcelinho123', email: 'marcelo@gmail.com' });
     });
 
     it('ASSERT - Usuário não encontrado', () => {
@@ -220,7 +219,7 @@ describe('getUsersByName', () => {
         expect(listUser[1]).to.contain({id: 3, name: 'Marcelo'});
 
         // Valida se a senha foi ocultada
-        expect(listUser[0]).to.not.contain({password: 'marcelo123'}); // Corrigido valor da senha
+        expect(listUser[0]).to.not.contain({password: 'marcelo123'}); 
     });
 
     it('ASSERT - Nome não encontrado', () => {
@@ -281,7 +280,8 @@ describe('updateUser', () => {
         };
         usuario.createUser(user);
 
-        (() => usuario.updateUser(1, 'banana', 'Error')).should.throw('Campo inválido');
+        (() => usuario.updateUser(1, 'banana', 'Error'))
+        .should.throw('Campo inválido');
     });
 
     it('SHOULD - Apelido já existe', () => {
@@ -349,7 +349,7 @@ describe('deleteUser', () => {
     });
 });
 
-describe('reseteUsers', () => { // Tive que alterar para resetUser
+describe('reseteUsers', () => {
     it('ASSERT - Reseta lista de usuários', () => {
         const user = {
             id: 1,
@@ -369,18 +369,17 @@ describe('reseteUsers', () => { // Tive que alterar para resetUser
 
 describe('Testes com Stubs (Sinon)', () => {
 
-    // Exemplo 1: Forçar 'find' a não encontrar usuário no login
+    // Forçar 'find' a não encontrar usuário no login
     it('STUB 1 - logInUser: Deve lançar erro se users.find retornar undefined', () => {
         // Arrange: Substitui users.find para sempre retornar undefined
         // Como 'users' é um array interno, stubamos Array.prototype.find
         const findStub = sandbox.stub(Array.prototype, 'find').returns(undefined);
-
         // Act & Assert
         expect(() => usuario.logInUser('inexistente', 'senha'))
             .to.throw('Usuário não encontrado');
     });
 
-    // Exemplo 2: Forçar 'find' a encontrar um usuário específico no login
+    //Forçar 'find' a encontrar um usuário específico no login
     it('STUB 2 - logInUser: Deve ter sucesso se users.find retornar usuário correto', () => {
         const fakeUser = { id: 1, userName: 'teste', password: '123' };
         const findStub = sandbox.stub(Array.prototype, 'find').returns(fakeUser);
@@ -393,7 +392,7 @@ describe('Testes com Stubs (Sinon)', () => {
         expect(logStub.calledOnce).to.be.true;
     });
 
-    // Exemplo 3: Forçar 'findIndex' a não encontrar usuário no deleteUser
+    // Forçar 'findIndex' a não encontrar usuário no deleteUser
     it('STUB 3 - deleteUser: Deve lançar erro se findIndex retornar -1', () => {
         const findIndexStub = sandbox.stub(Array.prototype, 'findIndex').returns(-1);
 
@@ -401,7 +400,7 @@ describe('Testes com Stubs (Sinon)', () => {
             .to.throw('Usuário não encontrado');
     });
 
-    // Exemplo 4: Forçar 'find' a retornar um usuário existente ao tentar criar duplicado
+    //Forçar 'find' a retornar um usuário existente ao tentar criar duplicado
      it('STUB 4 - createUser: Deve lançar erro de ID duplicado se find retornar usuário', () => {
          const existingUser = { id: 1, userName: 'existente', email: 'e@e.com' };
          // Stub para a primeira chamada find (verificação de ID)
@@ -412,7 +411,7 @@ describe('Testes com Stubs (Sinon)', () => {
              .to.throw('ID já está cadastrado');
      });
 
-    // Exemplo 5: Stub para getUsersByName
+    //Stub para getUsersByName
     it('STUB 5 - getUsersByName: Deve retornar dados do stub', () => {
         const fakeUser = { id: 1, name: 'Stubbed User', userName: 'stub_user', email: 's@s.com'}; // Removido password
         // Stub diretamente na função exportada
@@ -427,7 +426,7 @@ describe('Testes com Stubs (Sinon)', () => {
 
 describe('Testes com Mocks/Expectations (Sinon)', () => {
 
-    // Exemplo 1: Verifica console.log no login
+    //Verifica console.log no login
     it('MOCK 1 - logInUser: Verifica se console.log é chamado corretamente', () => {
         const user = { id: 1, userName: 'carlinhos', password: '123', name: 'Carlos', email:'c@c.com' };
         usuario.createUser(user);
@@ -440,7 +439,7 @@ describe('Testes com Mocks/Expectations (Sinon)', () => {
         expect(logStub.calledWith('Usuário carlinhos foi logado')).to.be.true; // Corrigido nome do user
     });
 
-    // Exemplo 2: Verifica se users.push é chamado no createUser
+    //Verifica se users.push é chamado no createUser
     it('MOCK 2 - createUser: Verifica se users.push é chamado', () => {
         const user = { id: 1, name: 'Teste', userName: 'testUser', password: 'pwd', email: 't@t.com' };
         // Cria um Spy para observar Array.prototype.push
@@ -451,7 +450,6 @@ describe('Testes com Mocks/Expectations (Sinon)', () => {
         // Verifica se o spy (push) foi chamado
         expect(pushSpy.calledOnce).to.be.true;
         // Verifica se foi chamado com um objeto contendo as propriedades do user
-        // Usamos sinon.match para verificar parte do objeto, incluindo gallery e posts
         expect(pushSpy.calledWith(sinon.match({
             id: 1,
             userName: 'testUser',
@@ -460,7 +458,7 @@ describe('Testes com Mocks/Expectations (Sinon)', () => {
         }))).to.be.true;
     });
 
-    // Exemplo 3: Verifica se findIndex é chamado com o ID correto no deleteUser
+    // Verifica se findIndex é chamado com o ID correto no deleteUser
     it('MOCK 3 - deleteUser: Verifica se findIndex é chamado com a lógica de ID correta', () => {
         const user = { id: 5, name: 'Para Deletar', userName: 'del', password: 'pwd', email: 'd@d.com' };
         usuario.createUser(user);
@@ -478,7 +476,7 @@ describe('Testes com Mocks/Expectations (Sinon)', () => {
         expect(callback({ id: 99 })).to.be.false;
     });
 
-     // Exemplo 4: Verifica se splice é chamado após encontrar o índice no deleteUser
+     // Verifica se splice é chamado após encontrar o índice no deleteUser
      it('MOCK 4 - deleteUser: Verifica se splice é chamado com o índice correto', () => {
          const user = { id: 7, name: 'Outro Para Deletar', userName: 'del7', password: 'pwd', email: 'd7@d7.com' };
          usuario.createUser(user);
@@ -494,7 +492,7 @@ describe('Testes com Mocks/Expectations (Sinon)', () => {
          expect(spliceSpy.calledWith(0, 1)).to.be.true;
      });
 
-    // Exemplo 5: Verifica se users.find é chamado no updateUser para achar o user
+    //Verifica se users.find é chamado no updateUser para achar o user
     it('MOCK 5 - updateUser: Verifica se users.find é chamado para encontrar o usuário a ser atualizado', () => {
         const user = { id: 10, name: 'Original', userName: 'orig', password: 'pwd', email: 'o@o.com' };
         usuario.createUser(user);

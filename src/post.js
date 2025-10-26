@@ -14,9 +14,9 @@ function createPost(userId, post){
         throw new Error("Categoria inválida");
 
     if (!post.createdAt)
-        throw new Error("Data inválida");
-
-    if(!(post.createdAt instanceof Date)) post.createdAt = new Date (post.createdAt);
+         throw new Error("Data inválida");
+        
+    if(!(post.createdAt instanceof Date)) post.createdAt = new Date (post.createdAt);
 
     const user = getUser.getUserById(userId);
     if(!user) throw new Error("Usuário não encontrado");
