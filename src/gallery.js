@@ -1,37 +1,42 @@
-// src/gallery.js
+const usuario = require('../src/user')
 
-const photos = [];
-let nextPhotoId = 1; // Para gerar IDs automaticamente
 
 /**
  * Cria e adiciona uma nova foto à galeria.
  * @param {object} photoData - Objeto com { imageUrl, description, authorId }
  */
-function uploadPhoto(photoData) {
-  if (!photoData || !photoData.imageUrl || !photoData.description || !photoData.authorId) {
-    throw new Error("Dados da foto inválidos");
+function uploadPhoto(usertId, image) {
+  
+  const user = usuario.getUserById(usertId)
+  if(!user) throw new("Usuario não encontrado");
+
+  
+  if(image.type !== 'image/png') throw new Error('Tipo de imagem não suportado')
+
+  if(!image.description || !image.description.trim().length === 0){
+    throw new Error('Descrição da imagem não pode ser em branco');
   }
 
-  const newPhoto = {
-    id: nextPhotoId++,
-    imageUrl: photoData.imageUrl,
-    description: photoData.description,
-    authorId: photoData.authorId,
-    likes: [],
-    createdAt: new Date(),
-    comments: []
-  };
+  if(!(image.createDat instanceof Date)) image.createDat = new Date (image.createDat)
+  if(isNaN(image.createDat)) throw new Error('Data Inválida')
+  
+  if(!user.images){
+    user.images = [];
+  }
+  
+  if(user.images.find(image => image.id == image.id)) throw new Error('Já existe uma imagem com esse id');
 
-  photos.push(newPhoto);
-  return newPhoto;
+  user.images.push({...image});
+  return image;
 }
 
 /**
  * Busca uma foto pelo seu ID (código).
  * @param {number} id
  */
-function getPhotoById(id) {
-  return photos.find(p => p.id === id);
+function getPhotoById(userId,imageId) {
+  const user = usuario.getUserById(userId)
+  return user.images.find(image => image.id === imageId);
 }
 
 /**
@@ -49,11 +54,14 @@ function getPhotosByUser(userId) {
  * @param {Date} endDate - Data final
  */
 function getPhotosByRangeDate(userId, startDate, endDate) {
-  return photos.filter(p =>
-    p.authorId === userId &&
-    p.createdAt >= startDate &&
-    p.createdAt <= endDate
-  );
+  const user = usuario.getUserById(userId)
+  const starTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+
+  return user.images.filter(image =>{
+    const imageTime = new Date(image.createDat).getTime()
+    return imageTime >= starTime && imageTime <= endTime;
+  });
 }
 
 /**
@@ -96,14 +104,6 @@ function unlikePhoto(photoId, userId) {
 }
 
 /**
- * Limpa a galeria para os testes.
- */
-function resetPhotos() {
-  photos.length = 0;
-  nextPhotoId = 1; // Reseta o contador de ID
-}
-
-/**
  * Função assíncrona para ser mockada com Sinon.
  * Em um cenário real, buscaria fotos de uma API.
  */
@@ -122,6 +122,5 @@ module.exports = {
   deletePhoto,
   likePhoto,
   unlikePhoto,
-  resetPhotos,
   fetchPhotosFromApi
 };
