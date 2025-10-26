@@ -27,7 +27,7 @@ describe("Testes de Comentários", () => {
   });
 
   describe("criarComentario()", () => {
-    it.only("Cria comentário para postagem", () => {
+    it("Cria comentário para postagem", () => {
         comments.criarComentario(1, 'post', 2, {
             id: 1, 
             conteudo: "Muito boa!", 
