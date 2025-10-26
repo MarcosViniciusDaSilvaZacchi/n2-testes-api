@@ -34,24 +34,132 @@ describe("Testes de Comentários", () => {
 
         const comentarioCriado = comments.procuraComentario(1, 'post', 2, 1);
         expect(comentarioCriado).to.exist;
+        expect(comentarioCriado).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
+        expect(comentarioCriado.id).to.equal(1);
         
         const postagem = post.searchPostID(1, 2); 
         expect(postagem.comments).to.have.lengthOf(1);
         expect(postagem.comments[0]).to.deep.include(comentarioCriado);
     });
 
-    it.only("deve dar erro se faltar dados", () => {
-      expect(() => criarComentario()).to.throw("Preencha todos os dados do comentário corretamente!");
+    // it("Cria comentário para foto", () => {
+    //     comments.criarComentario(1, 'post', 2, {
+    //         id: 1, 
+    //         conteudo: "Muito boa!", 
+    //         idAutor: 2, 
+    //         dataCriacao: new Date()
+    //     });
+
+    //     const comentarioCriado = comments.procuraComentario(1, 'photos', 2, 1);
+    //     expect(comentarioCriado).to.exist;
+        
+    //     const postagem = post.ARRUMAR(1, 2); 
+    //     expect(postagem.comments).to.have.lengthOf(1);
+    //     expect(postagem.comments[0]).to.deep.include(comentarioCriado);
+    // });
+
+    it("Parâmetros de destino inválidos", () => {
+      (() => comments.criarComentario()).should.throw("Parâmetros de destino inválidos");  // !targetUserId
+      (() => comments.criarComentario(1)).should.throw("Parâmetros de destino inválidos");  // !target
+      (() => comments.criarComentario(1, "post")).should.throw("Parâmetros de destino inválidos");  // !targetId
+      (() => comments.criarComentario(1, "post", -1)).should.throw("Parâmetros de destino inválidos");  // targetId <= 0
     });
 
-    it("deve dar erro se autor não existir", () => {
-      expect(() => criarComentario(1, { conteudo: "Oi", idAutor: 999 }))
-        .to.throw("Usuário (autor) não encontrado.");
+    it("Usuário (alvo do comentário) não encontrado.", () => {
+      (() => comments.criarComentario(9999, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("Usuário (alvo do comentário) não encontrado.");
     });
 
-    it("deve dar erro se a foto não existir", () => {
-      expect(() => criarComentario(99, { conteudo: "oi", idAutor: 2 }))
-        .to.throw("Foto não encontrada.");
+    it("Usuário (autor do comentário) não encontrado.", () => {
+      (() => comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 9999, 
+            dataCriacao: new Date()
+            })).should.throw("Usuário (autor do comentário) não encontrado.");
+    });
+
+    it("Dados do comentário inválidos", () => {
+      (() => comments.criarComentario(1, 'post', 2, {
+            //id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("Dados do comentário inválidos");
+
+      (() => comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            //conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("Dados do comentário inválidos");
+
+      (() => comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            //idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("Dados do comentário inválidos");
+
+      (() => comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            //dataCriacao: new Date()
+            })).should.throw("Dados do comentário inválidos");
+    });
+
+    it("Usuário (autor do comentário) não encontrado.", () => {
+      (() => comments.criarComentario(1, 'teste', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
+    });
+
+    it("ID de comentário já está cadastrado neste conteúdo.", () => {
+      comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Maravilhoso!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+      });
+
+      (() => comments.criarComentario(1, 'post', 2, {
+            id: 1, 
+            conteudo: "Muito boa!", 
+            idAutor: 2, 
+            dataCriacao: new Date()
+            })).should.throw("ID de comentário já está cadastrado neste conteúdo.");
+    });
+  });
+
+  describe.only("procuraComentario()", () => {
+    it("Retorna um comentário de uma postagem", () => {
+      comments.criarComentario(1, 'post', 2, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
+
+      const lista = comments.procuraComentario(1, "post", 2, 1);
+      expect(lista).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
+      expect(lista.id).to.equal(1);
+    });
+
+    // it("Retorna um comentário de uma foto", () => {
+    //   const novaFoto = comments.ARRUMAR(1, 'photo', 2, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
+
+    //   const lista = comments.procuraComentario(1, "photo", 2, novaFoto.id);
+    //   expect(lista).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
+    //   expect(lista.id).to.equal(1);
+    // });
+
+    it("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.", () => {
+      comments.criarComentario(1, 'post', 2, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
+
+      (() => comments.procuraComentario(1, "teste", 2, 1)).should.throw("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.");
     });
   });
 
