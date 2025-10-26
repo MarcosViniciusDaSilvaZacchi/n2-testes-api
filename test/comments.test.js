@@ -17,10 +17,13 @@ describe("Testes de Comentários", () => {
     createUser({ id: 1, name: "Yan", userName: "yanc", password: "123", email: "yan@email.com" });
     post.createPost(1, { id: 1, createdAt: "2025/01/10", category: "Tecnologia", content: "Novidades do JS" });
     post.createPost(1, { id: 2, createdAt: "2025/01/11", category: "Esportes",   content: "Resultado do jogo" });
+    photo.uploadPhoto(1, { id:1, type: 'image/png', description: 'Setup gamer iluminado com teclado RGB e monitor ultrawide', createDat: new Date() } );
 
     createUser({ id: 2, name: "Marcos", userName: "marcos", password: "123", email: "marcos@email.com" });
     post.createPost(2, { id: 1, createdAt: "2025/03/12", category: "Culinaria", content: "Receita prática" });
     post.createPost(2, { id: 2, createdAt: "2025/04/01", category: "Política",  content: "Propaganda política" });
+    photo.uploadPhoto(2, { id:1, type: 'image/png', description: 'Bolo de cenoura com cobertura de chocolate — receita da vovó', createDat: new Date() } );
+    
   });
 
   describe("criarComentario()", () => {
@@ -42,21 +45,21 @@ describe("Testes de Comentários", () => {
         expect(postagem.comments[0]).to.deep.include(comentarioCriado);
     });
 
-    // it("Cria comentário para foto", () => {
-    //     comments.criarComentario(1, 'post', 2, {
-    //         id: 1, 
-    //         conteudo: "Muito boa!", 
-    //         idAutor: 2, 
-    //         dataCriacao: new Date()
-    //     });
+    it("Cria comentário para foto", () => {
+        comments.criarComentario(2, 'photo', 1, {
+            id: 1, 
+            conteudo: "Maravilhoso!", 
+            idAutor: 1, 
+            dataCriacao: new Date()
+        });
 
-    //     const comentarioCriado = comments.procuraComentario(1, 'photos', 2, 1);
-    //     expect(comentarioCriado).to.exist;
+        const comentarioCriado = comments.procuraComentario(2, 'photo', 1, 1);
+        expect(comentarioCriado).to.exist;
         
-    //     const postagem = post.ARRUMAR(1, 2); 
-    //     expect(postagem.comments).to.have.lengthOf(1);
-    //     expect(postagem.comments[0]).to.deep.include(comentarioCriado);
-    // });
+        const foto = photo.getPhotoById(2, 1); 
+        expect(foto.comments).to.have.lengthOf(1);
+        expect(foto.comments[0]).to.deep.include(comentarioCriado);
+    });
 
     it("Parâmetros de destino inválidos", () => {
       (() => comments.criarComentario()).should.throw("Parâmetros de destino inválidos");  // !targetUserId
@@ -148,13 +151,13 @@ describe("Testes de Comentários", () => {
       expect(lista.id).to.equal(1);
     });
 
-    // it("Retorna um comentário de uma foto", () => {
-    //   const novaFoto = comments.ARRUMAR(1, 'photo', 2, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
+    it("Retorna um comentário de uma foto", () => {
+      comments.criarComentario(1, 'photo', 1, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
 
-    //   const lista = comments.procuraComentario(1, "photo", 2, novaFoto.id);
-    //   expect(lista).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
-    //   expect(lista.id).to.equal(1);
-    // });
+      const lista = comments.procuraComentario(1, "photo", 1, 1);
+      expect(lista).to.have.keys(['id', 'conteudo', 'idAutor', 'dataCriacao']);
+      expect(lista.id).to.equal(1);
+    });
 
     it("Tipo de 'target' inválido. Aceito: 'photo'/'foto' ou 'post'.", () => {
       comments.criarComentario(1, 'post', 2, { id: 1, conteudo: "Muito boa!", idAutor: 2, dataCriacao: new Date() });
