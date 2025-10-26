@@ -4,190 +4,188 @@ const postagem = require('../src/post.js');
 
 const expect = chai.expect;
 
-beforeEach(() => {
-    usuario.resetUsers();
+beforeEach(() => { 
+    usuario.resetUsers();
 });
 
 describe("createPost", ()=>{ 
-    const userId = 1;
-    beforeEach (()=> {
-        const user = {
-            id: userId,
-            name: 'Catatau',
-            userName: 'catatau',
-            password: '12345',
-            email: 'catatau@gmail.com',
-        };
-        usuario.createUser(user);
-    });
+    const userId = 1;
+    beforeEach (()=> {
+        const user = {
+            id: userId,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com',
+        };
+        usuario.createUser(user);});
+    it("Deve criar e associar corretamente um novo post ao ID do usuário", ()=>{
+     const newPost = {
+        id: 1,
+        category: "Política",
+        content: "Os politicos são corruptos, por isso a população passa fome.",
+        createdAt: "2024/10/02"
+        };
+        postagem.createPost(userId, newPost);
 
-   it("Deve criar e associar corretamente um novo post ao ID do usuário", ()=>{
-        const newPost = {
-            id: 1,
-            category: "Política",
-            content: "Os politicos são corruptos, por isso a população passa fome.",
-            createdAt: "2024/10/02"
-        };
-        postagem.createPost(userId, newPost);
-
-        const postCriado = postagem.searchPostID(userId, newPost.id);
-        expect(postCriado).to.exist;
-        expect(postCriado).to.deep.include(newPost);
-        expect(postCriado).to.deep.include({comments: []});
-    });
+        const postCriado = postagem.searchPostID(userId, newPost.id);
+        expect(postCriado).to.exist;
+        expect(postCriado).to.deep.include(newPost);
+        expect(postCriado).to.deep.include({comments: []});
+    });
     
     it("Deve lançar um erro caso o 'post' seja nulo ou indefinido", ()=>{
         expect(()=>{
-            postagem.createPost(userId, null)
-        }).to.throw("Dados inválidos");
+            postagem.createPost(userId, null)
+        }).to.throw("Dados inválidos");
         
         expect(()=>{
-            postagem.createPost(userId, undefined)
-        }).to.throw("Dados inválidos");
+            postagem.createPost(userId, undefined)
+        }).to.throw("Dados inválidos");
     });
 
-    it("Deve lançar um erro caso o 'id' seja nulo ou indefinido", ()=>{
-        const invalidIdPost = {
-            // id: 1, 
-            category: "Política",
-            content: "Conteúdo Válido",
-            createdAt: "2024/10/02"
-        };
-        
-        expect(()=>{
-            postagem.createPost(userId, invalidIdPost)
-        }).to.throw("ID inválido");
+    it("Deve lançar um erro caso o 'id' seja nulo ou indefinido", ()=>{
+        const invalidIdPost = {
+        // id: 1, 
+        category: "Política",
+        content: "Conteúdo Válido",
+        createdAt: "2024/10/02"
+        };
+
+        expect(()=>{
+        postagem.createPost(userId, invalidIdPost)
+        }).to.throw("ID inválido");
         
         const nullIdPost = { ...invalidIdPost, id: null };
         expect(()=>{
-            postagem.createPost(userId, nullIdPost)
-        }).to.throw("ID inválido");
-    });
+        postagem.createPost(userId, nullIdPost)
+        }).to.throw("ID inválido");
+});
 
-    it("Deve lançar um erro caso o 'id' não for um número", ()=>{
-        const invalidId = {
-            id: 'Texto',
-            category: "Política",
-            content: "Conteúdo Válido", 
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidId)
-        }).to.throw("ID inválido");
-    });
+    it("Deve lançar um erro caso o 'id' não for um número", ()=>{
+        const invalidId = {
+        id: 'Texto',
+        category: "Política",
+        content: "Conteúdo Válido", 
+        createdAt: "2024/10/02"
+    };
+    expect(()=>{
+        postagem.createPost(userId,invalidId)
+    }).to.throw("ID inválido");
+});
 
     it("Deve lançar um erro caso o 'id' seja NaN", ()=>{
-        const invalidId = {
-            id: NaN,
-            category: "Política",
-            content: "Conteúdo Válido",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidId)
-        }).to.throw("ID inválido");
-    });
+        const invalidId = {
+            id: NaN,
+            category: "Política",
+            content: "Conteúdo Válido",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidId)
+        }).to.throw("ID inválido");
+    });
 
     it("Deve lançar um erro caso o 'id' seja menor ou igual a 0", ()=>{
-        const invalidId = {
-            id: -1,
-            category: "Política",
-            content: "Conteúdo Válido",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidId)
-        }).to.throw("ID inválido");
-    });
+        const invalidId = {
+            id: -1,
+            category: "Política",
+            content: "Conteúdo Válido",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidId)
+        }).to.throw("ID inválido");
+});
 
-    it("Deve lançar um erro caso o 'id' já esteja cadastrado", ()=>{
-        const post = {
-            id: 10,
-            category: "Teste",
-            content: "Teste",
-            createdAt: "2024/10/02"
-        };
-        postagem.createPost(userId,post);
+    it("Deve lançar um erro caso o 'id' já esteja cadastrado", ()=>{
+        const post = {
+            id: 10,
+            category: "Teste",
+            content: "Teste",
+            createdAt: "2024/10/02"
+        };
+        postagem.createPost(userId,post);
 
-        const postDuplicate = {
-            id: 10,
-            category: "Teste 2",
-            content: "Teste 2",
-            createdAt: "2024/10/02"
-        };
+    const postDuplicate = {
+        id: 10,
+        category: "Teste 2",
+        content: "Teste 2",
+        createdAt: "2024/10/02"
+    };
 
-        expect(()=>{
-            postagem.createPost(userId,postDuplicate)
-        }).to.throw("ID já está cadastrado");
-    });
+    expect(()=>{
+        postagem.createPost(userId,postDuplicate)
+    }).to.throw("ID já está cadastrado");
+});
 
     // Teste de Conteúdo vazio
-    it("Deve lançar um erro caso o campo 'content' seja vazio", ()=>{
-        const invalidContentEmpty = {
-            id: 2,
-            category: "Política",
-            content: "",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidContentEmpty)
-        }).to.throw("Conteúdo inválido");
+    it("Deve lançar um erro caso o campo 'content' seja vazio", ()=>{
+        const invalidContentEmpty = {
+            id: 2,
+            category: "Política",
+            content: "",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidContentEmpty)
+        }).to.throw("Conteúdo inválido");
         
         const invalidContentWhitespace = {
-            id: 2,
-            category: "Política",
-            content: "   ",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidContentWhitespace)
-        }).to.throw("Conteúdo inválido");
-    });
+            id: 2,
+            ategory: "Política",
+            content: "   ",
+            createdAt: "2024/10/02"
+         };
+         expect(()=>{
+            postagem.createPost(userId,invalidContentWhitespace)
+        }).to.throw("Conteúdo inválido");
+    });
 
-    it("Deve lançar um erro caso o campo category seja vazio", ()=>{
-        const invalidCategoryEmpty = {
-            id: 3,
-            category: "",
-            content: "Os politicos são corruptos, por isso a população passa fome.",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidCategoryEmpty)
-        }).to.throw("Categoria inválida");
+    it("Deve lançar um erro caso o campo category seja vazio", ()=>{
+        const invalidCategoryEmpty = {
+            id: 3,
+            category: "",
+            content: "Os politicos são corruptos, por isso a população passa fome.",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidCategoryEmpty)
+        }).to.throw("Categoria inválida");
         
         const invalidCategoryWhitespace = {
-            id: 3,
-            category: "   ",
-            content: "Os politicos são corruptos, por isso a população passa fome.",
-            createdAt: "2024/10/02"
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidCategoryWhitespace)
-        }).to.throw("Categoria inválida");
-    });
+            id: 3,
+            category: "   ",
+            content: "Os politicos são corruptos, por isso a população passa fome.",
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidCategoryWhitespace)
+        }).to.throw("Categoria inválida");
+    });
 
     // Teste de Data Vazia
-    it("Deve lançar um erro caso o campo 'createdAt' seja vazio", ()=>{
-        const invalidDate = {
-            id: 4,
-            category: "Política",
-            content: "Os politicos são corruptos, por isso a população passa fome.",
-            createdAt: ""
-        };
-        expect(()=>{
-            postagem.createPost(userId,invalidDate)
-        }).to.throw("Data inválida");
+    it("Deve lançar um erro caso o campo 'createdAt' seja vazio", ()=>{
+        const invalidDate = {
+            id: 4,
+            category: "Política",
+            content: "Os politicos são corruptos, por isso a população passa fome.",
+            createdAt: ""
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidDate)
+        }).to.throw("Data inválida");
         
         const missingDate = {
-            id: 4,
-            category: "Política",
-            content: "Os politicos são corruptos, por isso a população passa fome."
-            // createdAt
-        };
-        expect(()=>{
-            postagem.createPost(userId,missingDate)
-        }).to.throw("Data inválida");
-    });
+             id: 4,
+             category: "Política",
+             content: "Os politicos são corruptos, por isso a população passa fome."
+             // createdAt
+             };
+             expect(()=>{
+                postagem.createPost(userId,missingDate)
+            }).to.throw("Data inválida");
+        });
 
     it("Deve converter 'createdAt' de string para Date", () => {
         const date = new Date(2025, 9, 24); 
@@ -209,18 +207,18 @@ describe("createPost", ()=>{
         expect(postCriado.createdAt.getDate()).to.equal(24);
     });
 
-    it("Deve lançar um erro caso usuário não exista", ()=>{
-        const nonExistentUserId = 35;
-        const validPost = {
-            id: 6,
-            createdAt: "2024/10/02",
-            category: "Política",
-            content: "Os politicos são corruptos, por isso a população passa fome."
-        }
-        expect(()=>{
-            postagem.createPost(nonExistentUserId, validPost)
-        }).to.throw("Usuário não encontrado");
-    });
+    it("Deve lançar um erro caso usuário não exista", ()=>{
+        const nonExistentUserId = 35;
+        const validPost = {
+            id: 6,
+            createdAt: "2024/10/02",
+            category: "Política",
+            content: "Os politicos são corruptos, por isso a população passa fome."
+        }
+        expect(()=>{
+            postagem.createPost(nonExistentUserId, validPost)
+        }).to.throw("Usuário não encontrado");
+});
 });
 
 describe("removePost",()=>{
@@ -235,8 +233,10 @@ describe("removePost",()=>{
         usuario.createUser(user);
         const userId = 35;
 
-        const post1 = {id: 1, createdAt: "2025/01/10", category: "Tecnologia", content: "Novidades do JS"};
-        const post2 = {id: 2, createdAt: "2025/01/11", category: "Esportes", content: "Resultado do jogo"};
+        const post1 = {id: 1, createdAt: "2025/01/10", category: 
+            "Tecnologia", content: "Novidades do JS"};
+        const post2 = {id: 2, createdAt: "2025/01/11", 
+            category: "Esportes", content: "Resultado do jogo"};
 
         postagem.createPost(userId,post1);
         postagem.createPost(userId,post2);
@@ -265,18 +265,17 @@ describe("removePost",()=>{
         };
         usuario.createUser(user);
         const userId = 35;
-
-        const post1 = {id: 1,createdAt: "2025/01/10",category: "Tecnologia",content: "Novidades do JS"};
-        const post2 = {id: 2,createdAt: "2025/01/11",category: "Esportes",content: "Resultado do jogo"};
-
+        const post1 = {id: 1,createdAt: "2025/01/10",category: 
+            "Tecnologia",content: "Novidades do JS"};
+        const post2 = {id: 2,createdAt: "2025/01/11",category: 
+            "Esportes",content: "Resultado do jogo"};
         postagem.createPost(userId,post1);
         postagem.createPost(userId,post2);
-
         expect(()=>{
             postagem.removePost(userId,-1);
         }).to.throw("Usuário não encontrado.");
     })
-    it("Deve lançar erro caso o index seja maio do que o tamanho de posts",()=>{
+    it("Deve lançar erro caso o index seja maior do que o tamanho de posts",()=>{
         const user = {
             id: 35,
             name: 'Catatau',
@@ -286,13 +285,12 @@ describe("removePost",()=>{
         };
         usuario.createUser(user);
         const userId = 35;
-
-        const post1 = {id: 1,createdAt: "2025/01/10",category: "Tecnologia",content: "Novidades do JS"};
-        const post2 = {id: 2,createdAt: "2025/01/11",category: "Esportes",content: "Resultado do jogo"};
-
+        const post1 = {id: 1,createdAt: "2025/01/10",category: 
+            "Tecnologia",content: "Novidades do JS"};
+        const post2 = {id: 2,createdAt: "2025/01/11",category: 
+            "Esportes",content: "Resultado do jogo"};
         postagem.createPost(userId,post1);
         postagem.createPost(userId,post2);
-
         expect(()=>{
             postagem.removePost(userId,2);
         }).to.throw("Usuário não encontrado.");
