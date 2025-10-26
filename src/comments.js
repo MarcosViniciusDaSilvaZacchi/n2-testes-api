@@ -88,9 +88,6 @@ function listarComentariosPorPostagem(targetUserId, postId) {
   return postagem.comments;
 }
 
-/**
- * Deleta um comentário específico de uma foto.
- */
 function deletarComentario(targetUserId, targetType, targetId, comentarioId) {
   if (targetType === 'photo' || targetType === 'foto') {
     const comments = listarComentariosPorFoto(targetUserId, targetId)

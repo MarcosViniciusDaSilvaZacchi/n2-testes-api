@@ -127,7 +127,7 @@ describe('getPhotoById',()=>{
         sinon.restore();
     })
 });
-describe('getPhotoById',()=>{
+describe('getPhotosByRangeDate',()=>{
     it('retorna um range imagens com base na data usando stub',()=>{
         const fakeUser = {
             id: 1,
