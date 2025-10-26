@@ -1,29 +1,33 @@
-// src/gallery.js
+const usuario = require('../src/user')
 
-const photos = [];
-let nextPhotoId = 1; // Para gerar IDs automaticamente
 
 /**
  * Cria e adiciona uma nova foto à galeria.
  * @param {object} photoData - Objeto com { imageUrl, description, authorId }
  */
-function uploadPhoto(photoData) {
-  if (!photoData || !photoData.imageUrl || !photoData.description || !photoData.authorId) {
-    throw new Error("Dados da foto inválidos");
+function uploadPhoto(usertId, image) {
+  
+  const user = usuario.getUserById(usertId)
+  if(!user) throw new("Usuario não encontrado");
+
+  
+  if(image.type !== 'image/png') throw new Error('Tipo de imagem não suportado')
+
+  if(!image.description || !image.description.trim().length === 0){
+    throw new Error('Descrição da imagem não pode ser em branco');
   }
 
-  const newPhoto = {
-    id: nextPhotoId++,
-    imageUrl: photoData.imageUrl,
-    description: photoData.description,
-    authorId: photoData.authorId,
-    likes: [],
-    createdAt: new Date(),
-    comments: []
-  };
+  if(!(image.createDat instanceof Date)) image.createDat = new Date (image.createDat)
+  if(isNaN(image.createDat)) throw new Error('Data Inválida')
+  
+  if(!user.images){
+    user.images = [];
+  }
+  
+  if(user.images.find(image => image.id == image.id)) throw new Error('Já existe uma imagem com esse id');
 
-  photos.push(newPhoto);
-  return newPhoto;
+  user.images.push({...image});
+  return image;
 }
 
 /**
