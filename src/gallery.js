@@ -1,117 +1,74 @@
-const usuario = require('../src/user')
+// src/gallery.js
 
+const usuario = require('./user.js'); // Dependência do módulo User
 
-/**
- * Cria e adiciona uma nova foto à galeria.
- * @param {object} photoData - Objeto com { imageUrl, description, authorId }
- */
-function uploadPhoto(usertId, image) {
-  
-  const user = usuario.getUserById(usertId)
-  if(!user) throw new("Usuario não encontrado");
+function uploadPhoto(userId, image) { 
+  const user = usuario.getUserById(userId);
+  if (!user) throw new Error("Usuario não encontrado"); 
 
-  
-  if(image.type !== 'image/png') throw new Error('Tipo de imagem não suportado')
-
-  if(!image.description || !image.description.trim().length === 0){
+  // Validações do objeto 'image'
+  if (!image || typeof image !== 'object') throw new Error('Dados da imagem inválidos.');
+  if (!image.id || typeof image.id !== 'number' || image.id <= 0 || isNaN(image.id)) throw new Error('ID da imagem inválido.');
+  if (image.type !== 'image/png') throw new Error('Tipo de imagem não suportado');
+  if (!image.description || typeof image.description !== 'string' || image.description.trim().length === 0) {
     throw new Error('Descrição da imagem não pode ser em branco');
   }
+  // Validação e conversão da data
+  if (!image.createDat) throw new Error('Data Inválida');
+  if (!(image.createDat instanceof Date)) image.createDat = new Date(image.createDat);
+  if (isNaN(image.createDat.getTime())) throw new Error('Data Inválida');
 
-  if(!(image.createDat instanceof Date)) image.createDat = new Date (image.createDat)
-  if(isNaN(image.createDat)) throw new Error('Data Inválida')
-  
-  if(!user.images){
+  // Inicializa user.images se não existir
+  if (!user.images) {
     user.images = [];
   }
-  
-  if(user.images.find(image => image.id == image.id)) throw new Error('Já existe uma imagem com esse id');
 
-  user.images.push({...image});
-  return image;
+  // Verifica ID duplicado DENTRO DO USUÁRIO
+  if (user.images.find(img => img.id === image.id)) throw new Error('Já existe uma imagem com esse id para este usuário');
+
+  // Adiciona a imagem ao array do usuário
+  const imageToAdd = { ...image }; // Cria uma cópia
+  user.images.push(imageToAdd);
+  return imageToAdd;
 }
 
-/**
- * Busca uma foto pelo seu ID (código).
- * @param {number} id
- */
-function getPhotoById(userId,imageId) {
-  const user = usuario.getUserById(userId)
+function getPhotoById(userId, imageId) {
+  const user = usuario.getUserById(userId);
+  // Se usuário não existe ou não tem imagens, retorna undefined
+  if (!user || !user.images) return undefined;
   return user.images.find(image => image.id === imageId);
 }
 
-/**
- * Busca todas as fotos de um usuário específico.
- * @param {number} userId
- */
 function getPhotosByUser(userId) {
-  return photos.filter(p => p.authorId === userId);
+  const user = usuario.getUserById(userId);
+  if (!user || !user.images) return []; // Retorna array vazio se não achar usuário ou imagens
+  return [...user.images]; // Retorna cópia do array de imagens do usuário
 }
 
-/**
- * Busca fotos de um usuário dentro de um intervalo de datas.
- * @param {number} userId
- * @param {Date} startDate - Data inicial
- * @param {Date} endDate - Data final
- */
 function getPhotosByRangeDate(userId, startDate, endDate) {
-  const user = usuario.getUserById(userId)
-  const starTime = new Date(startDate).getTime();
-  const endTime = new Date(endDate).getTime();
+  const user = usuario.getUserById(userId);
+  if (!user || !user.images) return [];
 
-  return user.images.filter(image =>{
-    const imageTime = new Date(image.createDat).getTime()
-    return imageTime >= starTime && imageTime <= endTime;
+  // Converte datas e valida intervalo
+  const startTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+  if (isNaN(startTime) || isNaN(endTime)) throw new Error('Formato de data inválido');
+  if (startTime > endTime) throw new Error('A data de início não pode ser posterior à data final');
+
+  return user.images.filter(image => {
+    const imageTime = image.createDat.getTime(); // Já é um objeto Date
+    return imageTime >= startTime && imageTime <= endTime;
   });
 }
 
-/**
- * Deleta uma foto pelo seu ID.
- * @param {number} photoId
- */
-function deletePhoto(photoId) {
-  const index = photos.findIndex(p => p.id === photoId);
-  if (index === -1) throw new Error("Foto não encontrada");
-  photos.splice(index, 1);
-}
+function deletePhoto(userId, imageId) {
+  const user = usuario.getUserById(userId);
+  if (!user || !user.images) throw new Error("Usuário ou galeria não encontrados");
 
-/**
- * Adiciona um like de um usuário a uma foto.
- * @param {number} photoId
- * @param {number} userId
- */
-function likePhoto(photoId, userId) {
-  const photo = getPhotoById(photoId);
-  if (!photo) throw new Error("Foto não encontrada");
+  const index = user.images.findIndex(img => img.id === imageId);
+  if (index === -1) throw new Error("Foto não encontrada na galeria do usuário");
 
-  // Evita likes duplicados
-  if (!photo.likes.includes(userId)) {
-    photo.likes.push(userId);
-  }
-  return photo;
-}
-
-/**
- * Remove um like de um usuário de uma foto.
- * @param {number} photoId
- * @param {number} userId
- */
-function unlikePhoto(photoId, userId) {
-  const photo = getPhotoById(photoId); // Linha ~82
-  if (!photo) throw new Error("Foto não encontrada"); // Linha ~83
-
-  photo.likes = photo.likes.filter(likerId => likerId !== userId);
-  return photo;
-}
-
-/**
- * Função assíncrona para ser mockada com Sinon.
- * Em um cenário real, buscaria fotos de uma API.
- */
-/* istanbul ignore next */ //ignorar na cobertura
-async function fetchPhotosFromApi() {
-    // Esta função será substituída nos testes.
-    // O retorno aqui não importa, pois o Sinon irá interceptá-lo.
-    return Promise.resolve([]);
+  user.images.splice(index, 1);
 }
 
 module.exports = {
@@ -120,7 +77,4 @@ module.exports = {
   getPhotosByUser,
   getPhotosByRangeDate,
   deletePhoto,
-  likePhoto,
-  unlikePhoto,
-  fetchPhotosFromApi
 };

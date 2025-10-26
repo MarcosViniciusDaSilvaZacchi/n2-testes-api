@@ -1,207 +1,274 @@
-// test/gallery.test.js
+// test/gallery.test.js (Versão Final Consolidada e Corrigida)
 
 const chai = require('chai');
 const sinon = require('sinon');
+const usuario = require('../src/user.js'); // Dependência do módulo User
+const gallery = require('../src/gallery.js'); // Módulo Gallery a ser testado
 
 const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
-const {
-  uploadPhoto,
-  getPhotoById,
-  getPhotosByUser,
-  getPhotosByRangeDate,
-  deletePhoto,
-  likePhoto,
-  unlikePhoto,
-  resetPhotos
-} = require('../src/gallery.js');
+// Dados de Teste 
+const sampleUser = { id: 1, name: 'Tester', userName: 'tester', password: '123', email: 'tester@test.com', images: [] }; // Adicionado images: []
+const sampleImageData = { id: 15, type: 'image/png', description: 'Sample Photo', createDat: "2024/10/02" }; // Data como string inicialmente
 
-const galleryModule = require('../src/gallery.js'); // Para o Sinon
+// Bloco Principal
+describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
 
-describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
-
-  beforeEach(() => {
-    resetPhotos();
-  });
-
-  // Testes com o estilo EXPECT (7 testes)
-  describe('Funções de Criação e Busca (com EXPECT)', () => {
-    it('deve fazer o upload de uma nova foto com sucesso', () => {
-      const photoData = { imageUrl: 'http://a.com/1.jpg', description: 'Minha foto', authorId: 1 };
-      const newPhoto = uploadPhoto(photoData);
-      expect(newPhoto).to.be.an('object');
-      expect(newPhoto).to.have.property('id', 1);
-    });
-
-    it('a foto criada deve conter um array de likes vazio', () => {
-        const newPhoto = uploadPhoto({ imageUrl: 'http://a.com/1.jpg', description: 'Foto', authorId: 1 });
-        expect(newPhoto.likes).to.be.an('array').that.is.empty;
-    });
-
-    it('deve encontrar fotos de um usuário específico', () => {
-      uploadPhoto({ imageUrl: 'http://a.com/1.jpg', description: 'Foto de A', authorId: 1 });
-      uploadPhoto({ imageUrl: 'http://b.com/1.jpg', description: 'Foto de B', authorId: 2 });
-      const userPhotos = getPhotosByUser(1);
-      expect(userPhotos).to.have.lengthOf(1);
-    });
-
-    it('deve retornar um array vazio para um usuário sem fotos', () => {
-        const userPhotos = getPhotosByUser(999);
-        expect(userPhotos).to.be.an('array').that.is.empty;
-    });
-
-    it('deve lançar um erro se dados da foto forem inválidos', () => {
-      const invalidData = { description: 'Faltando URL e autor' };
-      expect(() => uploadPhoto(invalidData)).to.throw("Dados da foto inválidos");
-    });
-
-    it('a propriedade createdAt deve ser um objeto Date', () => {
-        const newPhoto = uploadPhoto({ imageUrl: 'http://a.com', description: 'Data', authorId: 1 });
-        expect(newPhoto.createdAt).to.be.a('Date');
-    });
-
-    it('deve lançar um erro ao tentar curtir uma foto que não existe (EXPECT)', () => {
-      const idInexistente = 999;
-      const userId = 100;
-      expect(() => {
-        likePhoto(idInexistente, userId);
-      }).to.throw('Foto não encontrada');
-    });
-  });
-
-  // Testes com o estilo SHOULD (7 testes)
-  describe('Funções de Like e Unlike (com SHOULD)', () => {
-    let photo;
+    // Hook principal para limpar usuários antes de cada teste
     beforeEach(() => {
-        photo = uploadPhoto({ imageUrl: 'http://a.com', description: 'Foto', authorId: 1 });
+        usuario.resetUsers();
+        // Adiciona um usuário padrão SEMPRE para a maioria dos testes
+        usuario.createUser({ ...sampleUser, images: [] }); // Garante que user 1 existe e images está vazio
     });
 
-    it('deve adicionar um like a uma foto', () => {
-      likePhoto(photo.id, 100);
-      const likedPhoto = getPhotoById(photo.id);
-      likedPhoto.likes.should.have.lengthOf(1);
-      likedPhoto.likes[0].should.equal(100);
-    });
-
-    it('não deve adicionar um like duplicado', () => {
-      likePhoto(photo.id, 100);
-      likePhoto(photo.id, 100);
-      const likedPhoto = getPhotoById(photo.id);
-      likedPhoto.likes.should.have.lengthOf(1);
-    });
-
-    it('deve remover um like de uma foto', () => {
-      likePhoto(photo.id, 100);
-      unlikePhoto(photo.id, 100);
-      const unlikedPhoto = getPhotoById(photo.id);
-      unlikedPhoto.likes.should.not.include(100);
-    });
-
-    it('a lista de likes deve ser um array', () => {
-        const result = likePhoto(photo.id, 101);
-        result.likes.should.be.an('array');
-    });
-
-    it('a remoção de um like que não existe não deve quebrar a função', () => {
-        unlikePhoto(photo.id, 999);
-        const currentPhoto = getPhotoById(photo.id);
-        currentPhoto.likes.should.be.an('array').that.is.empty;
-    });
-
-    it('deve lançar erro ao tentar descurtir foto que não existe', () => {
-        const idInexistente = 999;
-        const userId = 100;
-        (() => {
-            unlikePhoto(idInexistente, userId);
-        }).should.throw('Foto não encontrada');
-    });
-  });
-
-  // Testes com o estilo ASSERT (6 testes)
-  describe('Funções de Filtro e Deleção (com ASSERT)', () => {
-    it('deve deletar uma foto e ela não deve mais ser encontrada', () => {
-      const photo = uploadPhoto({ imageUrl: 'http://a.com', description: 'Para deletar', authorId: 1 });
-      deletePhoto(photo.id);
-      assert.isUndefined(getPhotoById(photo.id), 'Foto não deveria mais ser encontrada');
-    });
-
-    it('deve lançar um erro ao tentar deletar uma foto que não existe', () => {
-      assert.throws(() => deletePhoto(999), "Foto não encontrada");
-    });
-
-    it('deve encontrar fotos por intervalo de data', () => {
-      uploadPhoto({ imageUrl: 'http://a.com', description: 'Foto 1', authorId: 1 });
-      const startDate = new Date(Date.now() - 1000);
-      const endDate = new Date(Date.now() + 1000);
-      const results = getPhotosByRangeDate(1, startDate, endDate);
-      assert.strictEqual(results.length, 1);
-    });
-
-    it('não deve encontrar fotos fora do intervalo de data', () => {
-      uploadPhoto({ imageUrl: 'http://a.com', description: 'Foto 1', authorId: 1 });
-      const futureStartDate = new Date(Date.now() + 5000);
-      const futureEndDate = new Date(Date.now() + 10000);
-      const results = getPhotosByRangeDate(1, futureStartDate, futureEndDate);
-      assert.isEmpty(results, 'Não deveria encontrar fotos em um intervalo futuro');
-    });
-
-    it('o id de uma foto criada deve ser um número', () => {
-        const newPhoto = uploadPhoto({ imageUrl: 'http://a.com', description: 'a', authorId: 1 });
-        assert.isNumber(newPhoto.id);
-    });
-
-    it('não deve lançar erro ao deletar uma foto existente', () => {
-        const photo = uploadPhoto({ imageUrl: 'http://a.com', description: 'b', authorId: 1 });
-        assert.doesNotThrow(() => deletePhoto(photo.id));
-    });
-  });
-
-  // Testes com o SINON (5 testes)
-  describe('Testes de API Mockada com SINON', () => {
-    let fetchStub;
-    beforeEach(() => {
-        fetchStub = sinon.stub(galleryModule, 'fetchPhotosFromApi');
-    });
+    // Restaurar stubs do Sinon após cada teste, se houver
     afterEach(() => {
-        fetchStub.restore();
+        sinon.restore();
     });
 
-    it('deve chamar a função fetchPhotosFromApi uma vez', async () => {
-        fetchStub.resolves([]);
-        await galleryModule.fetchPhotosFromApi();
-        assert.isTrue(fetchStub.calledOnce);
+    // Testes para uploadPhoto (10 Assert) 
+    describe('uploadPhoto com ASSERT', () => {
+        it('ASSERT - Deve fazer upload de foto com sucesso', () => {
+            const userId = 1;
+            const image = { ...sampleImageData }; // Usa cópia
+            const uploaded = gallery.uploadPhoto(userId, image);
+
+            // Verifica o retorno
+            assert.isObject(uploaded, 'Retorno deveria ser um objeto');
+            assert.strictEqual(uploaded.id, image.id, 'ID da imagem retornada incorreto');
+            assert.instanceOf(uploaded.createDat, Date, 'Data deveria ser convertida para Date');
+
+            // Verifica se foi adicionado ao usuário
+            const user = usuario.getUserById(userId);
+            assert.isArray(user.images, 'User.images deveria ser um array');
+            assert.lengthOf(user.images, 1, 'User.images deveria conter 1 foto');
+            assert.deepInclude(user.images[0], { id: image.id, description: image.description }, 'Dados da foto no array do usuário incorretos');
+        });
+
+        it('ASSERT - Deve lançar erro se usuário não for encontrado', () => {
+            assert.throws(() => gallery.uploadPhoto(999, sampleImageData), "Usuario não encontrado");
+        });
+
+        it('ASSERT - Deve lançar erro para tipo de imagem inválido (não PNG)', () => {
+            const invalidImage = { ...sampleImageData, type: 'image/jpeg' };
+            assert.throws(() => gallery.uploadPhoto(sampleUser.id, invalidImage), 'Tipo de imagem não suportado');
+        });
+
+        it('ASSERT - Deve lançar erro para descrição em branco', () => {
+            const invalidImage = { ...sampleImageData, description: '   ' };
+            assert.throws(() => gallery.uploadPhoto(sampleUser.id, invalidImage), 'Descrição da imagem não pode ser em branco');
+        });
+
+        it('ASSERT - Deve lançar erro para data inválida (string incorreta)', () => {
+            const invalidImage = { ...sampleImageData, createDat: 'data-invalida' };
+            assert.throws(() => gallery.uploadPhoto(sampleUser.id, invalidImage), 'Data Inválida');
+        });
+
+        it('ASSERT - Deve lançar erro para ID de imagem duplicado NO MESMO USUÁRIO', () => {
+            gallery.uploadPhoto(sampleUser.id, { ...sampleImageData }); // Adiciona a primeira vez
+            assert.throws(() => gallery.uploadPhoto(sampleUser.id, { ...sampleImageData }), 'Já existe uma imagem com esse id para este usuário');
+        });
+
+        it('ASSERT - Deve lançar erro se campo description não existir', () => {
+            const { description, ...invalidImage } = { ...sampleImageData }; // Remove a descrição
+            assert.throws(() => gallery.uploadPhoto(sampleUser.id, invalidImage), 'Descrição da imagem não pode ser em branco');
+        });
+       
+        it('ASSERT - Deve lançar erro se o objeto image for nulo ou inválido', () => {
+          const userId = 1;
+          assert.throws(() => gallery.uploadPhoto(userId, null), 'Dados da imagem inválidos.');
+          assert.throws(() => gallery.uploadPhoto(userId, 'nao sou objeto'), 'Dados da imagem inválidos.');
+        });
+        it('ASSERT - Deve lançar erro se o ID da imagem for inválido (nulo, não número, zero ou negativo)', () => {
+          const userId = 1;
+          const baseImage = { type: 'image/png', description: 'Desc', createDat: new Date() };
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage }), 'ID da imagem inválido.');// Testa ID faltando
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: null }), 'ID da imagem inválido.'); // Testa ID nulo
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: '10' }), 'ID da imagem inválido.'); // Testa ID como string
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: 0 }), 'ID da imagem inválido.'); // Testa ID zero
+          assert.throws(() => gallery.uploadPhoto(userId, { ...baseImage, id: -5 }), 'ID da imagem inválido.'); // Testa ID negativo
+          });
+        it('ASSERT - Deve lançar erro se createDat estiver faltando', () => {
+          const userId = 1;
+          const invalidImage = { id: 20, type: 'image/png', description: 'Descricao valida' }; // Falta createDat
+          assert.throws(() => gallery.uploadPhoto(userId, invalidImage), 'Data Inválida');
+        });
     });
 
-    it('deve retornar os dados mockados corretamente', async () => {
-        const fakeData = [{ id: 99, title: 'Foto Mockada' }];
-        fetchStub.resolves(fakeData);
-        const result = await galleryModule.fetchPhotosFromApi();
-        expect(result).to.deep.equal(fakeData);
+    // Testes para getPhotoById (5 Expect + Sinon)
+    describe('getPhotoById com EXPECT e SINON', () => {
+        it('EXPECT - Deve retornar undefined se o ID da imagem não for encontrado', () => {
+            gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 }); // Adiciona uma foto
+            const foundPhoto = gallery.getPhotoById(sampleUser.id, 999);
+            expect(foundPhoto).to.be.undefined;
+        });
+
+        it('EXPECT - Deve retornar undefined se o usuário não tiver galeria (images)', () => {
+            // Cria usuário sem galeria inicializada (caso raro, mas bom testar)
+            usuario.resetUsers();
+            usuario.createUser({ id: 5, name: 'NoGallery', userName: 'nogal', password:'1', email:'n@g.com' }); // Sem images: []
+            const foundPhoto = gallery.getPhotoById(5, 10);
+            expect(foundPhoto).to.be.undefined;
+        });
+
+        it('EXPECT - A foto encontrada deve ter a propriedade description', () => {
+            gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 });
+            const foundPhoto = gallery.getPhotoById(sampleUser.id, 10);
+            expect(foundPhoto).to.have.property('description', 'Sample Photo');
+        });
+
+        // Teste usando Sinon para mockar o usuário retornado
+        it('SINON - Deve encontrar a foto correta usando stub de usuário (EXPECT)', () => {
+            const fakeUser = {
+                id: 1, name: 'Fake', images: [
+                    { id: 15, type: 'image/png', description: 'Foto Fake 1', createDat: new Date("2024/10/02") },
+                    { id: 20, type: 'image/png', description: 'Foto Fake 2', createDat: new Date("2024/10/15") }
+                ]
+            };
+            // Stub para getUserById sempre retornar nosso usuário fake
+            sinon.stub(usuario, 'getUserById').returns(fakeUser);
+
+            const result = gallery.getPhotoById(1, 20); // Busca foto 20 no usuário fake 1
+
+            expect(result).to.not.be.undefined;
+            expect(result.id).to.equal(20);
+            expect(result.description).to.equal('Foto Fake 2');
+        });
+         it('EXPECT - Deve retornar undefined se o usuário (mockado) não for encontrado', () => {
+             sinon.stub(usuario, 'getUserById').returns(undefined); // Mock retorna undefined
+             const foundPhoto = gallery.getPhotoById(999, 10);
+             expect(foundPhoto).to.be.undefined;
+         });
     });
 
-    it('deve simular um erro na chamada da API', async () => {
-        const errorMessage = 'API fora do ar';
-        fetchStub.rejects(new Error(errorMessage));
-        try {
-            await galleryModule.fetchPhotosFromApi();
-            assert.fail('A função deveria ter lançado um erro');
-        } catch (error) {
-            error.message.should.equal(errorMessage);
-        }
+    //Testes para getPhotosByUser (5 Should)
+    describe('getPhotosByUser com SHOULD', () => {
+        beforeEach(() => {
+            // Adiciona múltiplas fotos para o usuário 1 e uma para o usuário 2
+            usuario.createUser({ id: 2, name: 'Other', userName: 'other', password: '456', email: 'other@test.com', images: [] });
+            gallery.uploadPhoto(1, { ...sampleImageData, id: 10 });
+            gallery.uploadPhoto(1, { ...sampleImageData, id: 11, description: 'Outra foto' });
+            gallery.uploadPhoto(2, { ...sampleImageData, id: 12, description: 'Foto do outro user' });
+        });
+
+        it('SHOULD - Deve retornar todas as fotos de um usuário específico', () => {
+            const user1Photos = gallery.getPhotosByUser(1);
+            user1Photos.should.be.an('array').with.lengthOf(2);
+            // Verifica os IDs para garantir que são as fotos corretas
+            const ids = user1Photos.map(p => p.id);
+            ids.should.include.members([10, 11]);
+        });
+
+        it('SHOULD - Deve retornar um array vazio se o usuário não tiver fotos', () => {
+            usuario.createUser({ id: 3, name: 'NoPhotos', userName: 'nophotos', password: '789', email: 'no@test.com' }); // User sem 'images' inicializado
+            const user3Photos = gallery.getPhotosByUser(3);
+            user3Photos.should.be.an('array').that.is.empty;
+        });
+
+        it('SHOULD - Deve retornar um array vazio se o usuário não existir', () => {
+            const user99Photos = gallery.getPhotosByUser(99);
+            user99Photos.should.be.an('array').that.is.empty;
+        });
+
+        it('SHOULD - O array retornado deve ser uma cópia (imutabilidade)', () => {
+            const user1Photos = gallery.getPhotosByUser(1);
+            user1Photos.push({ id: 99 }); // Modifica a cópia
+            const userOriginal = usuario.getUserById(1);
+            userOriginal.images.should.have.lengthOf(2); // Original não deve ser afetado
+        });
+        
+        it('SHOULD - As fotos retornadas devem conter a propriedade id', () => {
+             const user1Photos = gallery.getPhotosByUser(1);
+             user1Photos[0].should.have.property('id');
+        });
     });
 
-    it('deve garantir que a função foi chamada sem argumentos', async () => {
-        fetchStub.resolves([]);
-        await galleryModule.fetchPhotosFromApi();
-        assert.isTrue(fetchStub.calledWith());
+    // Testes para getPhotosByRangeDate (5 Sinon/variados) 
+    describe('getPhotosByRangeDate com SINON', () => {
+        let getUserStub;
+        const fakeUser = {
+            id: 1, name: 'Fake', userName: 'fake', /*...*/
+            images: [
+                { id: 1, description: 'Foto 1', createDat: new Date(2025, 9, 10) }, 
+                { id: 2, description: 'Foto 2', createDat: new Date(2025, 9, 15) }, 
+                { id: 3, description: 'Foto 3', createDat: new Date(2025, 9, 20) }  
+            ]
+        };
+
+        beforeEach(() => {
+            getUserStub = sinon.stub(usuario, 'getUserById').returns(fakeUser);
+        });
+
+        it('SINON - Deve encontrar fotos dentro do intervalo de datas (EXPECT)', () => {
+            const startDate = new Date(2025, 9, 12);
+            const endDate = new Date(2025, 9, 18); 
+            const results = gallery.getPhotosByRangeDate(1, startDate, endDate);
+            expect(results).to.have.lengthOf(1);
+            expect(results[0].id).to.equal(2);
+            expect(getUserStub.calledOnceWith(1)).to.be.true;
+        });
+
+        it('SINON - Deve retornar array vazio se nenhuma foto estiver no intervalo (SHOULD)', () => {
+            const startDate = new Date(2025, 10, 1); // Nov 1
+            const endDate = new Date(2025, 10, 5);   // Nov 5
+            const results = gallery.getPhotosByRangeDate(1, startDate, endDate);
+            results.should.be.an('array').that.is.empty;
+        });
+
+        it('SINON - Deve lançar erro se data de início for posterior à data final (ASSERT)', () => {
+            const startDate = new Date(2025, 9, 20);
+            const endDate = new Date(2025, 9, 10);
+            assert.throws(() => gallery.getPhotosByRangeDate(1, startDate, endDate),
+                'A data de início não pode ser posterior à data final');
+        });
+
+        it('SINON - Deve lançar erro se formato de data for inválido (EXPECT)', () => {
+             expect(() => gallery.getPhotosByRangeDate(1, 'data-invalida', new Date()))
+                 .to.throw('Formato de data inválido');
+        });
+
+        it('SINON - Deve retornar vazio se getUserById retornar undefined (ASSERT)', () => {
+             getUserStub.returns(undefined); // Stub retorna undefined
+             const results = gallery.getPhotosByRangeDate(1, new Date(2025, 9, 1), new Date(2025, 9, 30));
+             assert.isEmpty(results);
+        });
     });
 
-    it('o stub deve retornar um array, mesmo que vazio', async () => {
-        fetchStub.resolves([]);
-        const result = await galleryModule.fetchPhotosFromApi();
-        assert.isArray(result);
+    //Testes para deletePhoto (5 Should/Assert)
+    describe('deletePhoto com SHOULD e ASSERT', () => {
+        beforeEach(() => {
+             gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 });
+             gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 11 });
+        });
+
+        it('SHOULD - Deve deletar uma foto com sucesso', () => {
+            let user = usuario.getUserById(sampleUser.id);
+            user.images.should.have.lengthOf(2);
+            gallery.deletePhoto(sampleUser.id, 10);
+            user = usuario.getUserById(sampleUser.id);
+            user.images.should.have.lengthOf(1);
+            user.images[0].id.should.equal(11); // Verifica se a foto correta sobrou
+        });
+
+        it('SHOULD - Deve lançar erro ao tentar deletar foto inexistente', () => {
+            (() => gallery.deletePhoto(sampleUser.id, 999)).should.throw("Foto não encontrada na galeria do usuário");
+        });
+
+        it('ASSERT - Deve lançar erro ao tentar deletar foto de usuário inexistente', () => {
+            assert.throws(() => gallery.deletePhoto(999, 10), "Usuário ou galeria não encontrados");
+        });
+        
+        it('ASSERT - Não deve lançar erro ao deletar foto existente', () => {
+             assert.doesNotThrow(() => gallery.deletePhoto(sampleUser.id, 11));
+        });
+
+        it('SHOULD - A lista deve ficar vazia após deletar a última foto', () => {
+            gallery.deletePhoto(sampleUser.id, 10);
+            gallery.deletePhoto(sampleUser.id, 11);
+            const user = usuario.getUserById(sampleUser.id);
+            user.images.should.be.an('array').that.is.empty;
+        });
     });
-  });
 });
