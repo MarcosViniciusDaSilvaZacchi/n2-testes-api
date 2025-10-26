@@ -116,7 +116,7 @@ describe("Testes de Comentários", () => {
             })).should.throw("Dados do comentário inválidos");
     });
 
-    it("Foto não encontrada.", () => {
+    it("Foto não encontrada", () => {
       (() => comments.criarComentario(1, 'foto', 99, {
             id: 1, 
             conteudo: "Muito boa!", 
@@ -125,7 +125,7 @@ describe("Testes de Comentários", () => {
             })).should.throw("Foto não encontrada.");
     });
 
-    it("Postagem não encontrada.", () => {
+    it("Postagem não encontrada", () => {
       (() => comments.criarComentario(1, 'post', 99, {
             id: 1, 
             conteudo: "Muito boa!", 

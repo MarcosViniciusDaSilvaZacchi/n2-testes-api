@@ -33,12 +33,12 @@ function criarComentario(targetUserId, target, targetId, dadosComentario) {
   if (targetType === 'photo' || targetType === 'foto') {
     contentTarget = getPhotoById(targetUserId, targetId); 
 
-    if (!contentTarget) throw new Error("Foto não encontrada");
+    if (!contentTarget) throw new Error("Foto não encontrada.");
 
   } else if (targetType === 'post') {
     contentTarget = searchPostID(targetUserId, targetId); 
 
-    if (!contentTarget) throw new Error("Post não encontrado");
+    if (!contentTarget) throw new Error("Postagem não encontrada.");
 
   } else {
     throw new Error("Tipo de 'target' inválido.");

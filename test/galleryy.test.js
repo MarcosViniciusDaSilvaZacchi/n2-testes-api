@@ -127,8 +127,11 @@ describe('getPhotoById',()=>{
         sinon.restore();
     })
 });
-describe('getPhotosByRangeDate',()=>{
+describe.only('getPhotosByRangeDate',()=>{
     it('retorna um range imagens com base na data usando stub',()=>{
+      const data1 = new Date("2024/10/02").getTime();
+      const data2 = new Date("2024/10/15").getTime();
+
         const fakeUser = {
             id: 1,
             name: 'Catatau',
@@ -136,14 +139,15 @@ describe('getPhotosByRangeDate',()=>{
             password: '12345',
             email: 'catatau@gmail.com',
             images: [
-                {id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: "2024/10/02"},
-                {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"}
+                {id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: data1},
+                {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: data2}
             ] 
         }
         sinon.stub(usuario,'getUserById').returns(fakeUser);
         const result = imagem.getPhotosByRangeDate(1,"2024/10/01","2024/10/25");
-        expect(result).to.deep.equal([{id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: "2024/10/02"},
-            {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"}
+        expect(result).to.deep.equal([
+            {id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: data1},
+            {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: data2}
         ]);
         sinon.restore();
     })

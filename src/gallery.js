@@ -52,12 +52,15 @@ function getPhotosByRangeDate(userId, startDate, endDate) {
   // Converte datas e valida intervalo
   const startTime = new Date(startDate).getTime();
   const endTime = new Date(endDate).getTime();
-  if (isNaN(startTime) || isNaN(endTime)) throw new Error('Formato de data inválido');
-  if (startTime > endTime) throw new Error('A data de início não pode ser posterior à data final');
+
+  if (isNaN(startTime) || isNaN(endTime)) 
+    throw new Error('Formato de data inválido');
+  
+  if (startTime > endTime) 
+    throw new Error('A data de início não pode ser posterior à data final');
 
   return user.images.filter(image => {
-    const imageTime = image.createDat.getTime(); // Já é um objeto Date
-    return imageTime >= startTime && imageTime <= endTime;
+    return image.createDat >= startTime && image.createDat <= endTime;
   });
 }
 
