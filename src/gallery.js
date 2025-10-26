@@ -34,8 +34,9 @@ function uploadPhoto(usertId, image) {
  * Busca uma foto pelo seu ID (código).
  * @param {number} id
  */
-function getPhotoById(id) {
-  return photos.find(p => p.id === id);
+function getPhotoById(userId,imageId) {
+  const user = usuario.getUserById(userId)
+  return user.images.find(image => image.id === imageId);
 }
 
 /**
@@ -53,11 +54,14 @@ function getPhotosByUser(userId) {
  * @param {Date} endDate - Data final
  */
 function getPhotosByRangeDate(userId, startDate, endDate) {
-  return photos.filter(p =>
-    p.authorId === userId &&
-    p.createdAt >= startDate &&
-    p.createdAt <= endDate
-  );
+  const user = usuario.getUserById(userId)
+  const starTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+
+  return user.images.filter(image =>{
+    const imageTime = new Date(image.createDat).getTime()
+    return imageTime >= starTime && imageTime <= endTime;
+  });
 }
 
 /**
@@ -100,14 +104,6 @@ function unlikePhoto(photoId, userId) {
 }
 
 /**
- * Limpa a galeria para os testes.
- */
-function resetPhotos() {
-  photos.length = 0;
-  nextPhotoId = 1; // Reseta o contador de ID
-}
-
-/**
  * Função assíncrona para ser mockada com Sinon.
  * Em um cenário real, buscaria fotos de uma API.
  */
@@ -126,6 +122,5 @@ module.exports = {
   deletePhoto,
   likePhoto,
   unlikePhoto,
-  resetPhotos,
   fetchPhotosFromApi
 };

@@ -12,9 +12,10 @@ const assert = chai.assert;
 
 beforeEach(()=>{
     usuario.resetUsers()
+    sinon.restore();
 })
 
-describe("uploadPhoto",()=>{
+describe("uploadPhoto with assert",()=>{
     beforeEach(()=>{
       const user = {
         id: 1,
@@ -105,4 +106,45 @@ describe("uploadPhoto",()=>{
       };
       assert.throws(()=>imagem.uploadPhoto(userId,image),'Descrição da imagem não pode ser em branco');
     });
-})
+});
+
+describe('getPhotoById',()=>{
+    it('retorna uma imagem usando stub',()=>{
+        const fakeUser = {
+            id: 1,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com',
+            images: [
+                {id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: "2024/10/02"},
+                {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"}
+            ] 
+        }
+        sinon.stub(usuario,'getUserById').returns(fakeUser);
+        const result = imagem.getPhotoById(1,20);
+        expect(result).to.deep.equal({id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"});
+        sinon.restore();
+    })
+});
+describe('getPhotoById',()=>{
+    it('retorna um range imagens com base na data usando stub',()=>{
+        const fakeUser = {
+            id: 1,
+            name: 'Catatau',
+            userName: 'catatau',
+            password: '12345',
+            email: 'catatau@gmail.com',
+            images: [
+                {id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: "2024/10/02"},
+                {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"}
+            ] 
+        }
+        sinon.stub(usuario,'getUserById').returns(fakeUser);
+        const result = imagem.getPhotosByRangeDate(1,"2024/10/01","2024/10/25");
+        expect(result).to.deep.equal([{id: 15,type: 'image/png',description: 'Zé comeia foi pego com pote de mel na cueca',createDat: "2024/10/02"},
+            {id: 20,type: 'image/png',description: 'Zé comeia preso por lavagem de mel',createDat: "2024/10/15"}
+        ]);
+        sinon.restore();
+    })
+});

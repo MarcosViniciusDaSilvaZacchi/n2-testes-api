@@ -2,51 +2,37 @@
 
 const chai = require('chai');
 const sinon = require('sinon');
-const usuario = require('../src/user.js')
-const postagem = require('../src/post.js')
-const imagem = require('../src/gallery.js');
 
 const should = chai.should();
 const expect = chai.expect;
 const assert = chai.assert;
 
+const {
+  uploadPhoto,
+  getPhotoById,
+  getPhotosByUser,
+  getPhotosByRangeDate,
+  deletePhoto,
+  likePhoto,
+  unlikePhoto,
+  resetPhotos
+} = require('../src/gallery.js');
+
 const galleryModule = require('../src/gallery.js'); // Para o Sinon
 
 describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
-  beforeEach(()=>{
-    usuario.resetUsers()
-  })
+
+  beforeEach(() => {
+    resetPhotos();
+  });
+
   // Testes com o estilo EXPECT (7 testes)
   describe('Funções de Criação e Busca (com EXPECT)', () => {
-    beforeEach(()=>{
-      const user = {
-        id: 1,
-        name: 'Catatau',
-        userName: 'catatau',
-        password: '12345',
-        email: 'catatau@gmail.com'
-      }
-      usuario.createUser(user);
-    })
-
-    it.only('deve fazer o upload de uma nova foto com sucesso', () => {
-      const post = {
-        id: 3,
-        category: "Politica",
-        content: "Os politicos são corruptos, por isso a população passa fome.",
-        createdAt: "2024/10/02",
-      }
-      postagem.createPost(1,post);
-      const postId = 3;
-      const image = { 
-        id: 15,
-        type: 'image/png',
-        description: 'Zé comeia foi pego com pote de mel na cueca',
-        createDat: "2024/10/02"
-
-      };
-      const newPhoto = imagem.uploadPhoto(postId,image);
-      assert.deepEqual(newPhoto,image);
+    it('deve fazer o upload de uma nova foto com sucesso', () => {
+      const photoData = { imageUrl: 'http://a.com/1.jpg', description: 'Minha foto', authorId: 1 };
+      const newPhoto = uploadPhoto(photoData);
+      expect(newPhoto).to.be.an('object');
+      expect(newPhoto).to.have.property('id', 1);
     });
 
     it('a foto criada deve conter um array de likes vazio', () => {
@@ -86,7 +72,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
   });
 
   // Testes com o estilo SHOULD (7 testes)
-  describe.skip('Funções de Like e Unlike (com SHOULD)', () => {
+  describe('Funções de Like e Unlike (com SHOULD)', () => {
     let photo;
     beforeEach(() => {
         photo = uploadPhoto({ imageUrl: 'http://a.com', description: 'Foto', authorId: 1 });
@@ -134,7 +120,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
   });
 
   // Testes com o estilo ASSERT (6 testes)
-  describe.skip('Funções de Filtro e Deleção (com ASSERT)', () => {
+  describe('Funções de Filtro e Deleção (com ASSERT)', () => {
     it('deve deletar uma foto e ela não deve mais ser encontrada', () => {
       const photo = uploadPhoto({ imageUrl: 'http://a.com', description: 'Para deletar', authorId: 1 });
       deletePhoto(photo.id);
@@ -173,7 +159,7 @@ describe('Gerenciamento da Galeria de Fotos (Avançado)', () => {
   });
 
   // Testes com o SINON (5 testes)
-  describe.skip('Testes de API Mockada com SINON', () => {
+  describe('Testes de API Mockada com SINON', () => {
     let fetchStub;
     beforeEach(() => {
         fetchStub = sinon.stub(galleryModule, 'fetchPhotosFromApi');
