@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 // URL base do My JSON Server
 const BASE_URL = 'https://my-json-server.typicode.com/MarcosViniciusDaSilvaZacchi/n2-testes-api';
 
-describe.only('My JSON Server - Testes de Integração', () => {
+describe('My JSON Server - Testes de Integração', () => {
     describe('GET', () => {
         it('/users - Retorna todos os users cadastrados', async () => {
             const res = await chai.request(BASE_URL).get('/users');
