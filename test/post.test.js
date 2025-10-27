@@ -60,19 +60,19 @@ describe("createPost", ()=>{
         expect(()=>{
         postagem.createPost(userId, nullIdPost)
         }).to.throw("ID inválido");
-});
+    });
 
     it("Deve lançar um erro caso o 'id' não for um número", ()=>{
         const invalidId = {
-        id: 'Texto',
-        category: "Política",
-        content: "Conteúdo Válido", 
-        createdAt: "2024/10/02"
-    };
-    expect(()=>{
-        postagem.createPost(userId,invalidId)
-    }).to.throw("ID inválido");
-});
+            id: 'Texto',
+            category: "Política",
+            content: "Conteúdo Válido", 
+            createdAt: "2024/10/02"
+        };
+        expect(()=>{
+            postagem.createPost(userId,invalidId)
+        }).to.throw("ID inválido");
+    });
 
     it("Deve lançar um erro caso o 'id' seja NaN", ()=>{
         const invalidId = {
@@ -96,7 +96,7 @@ describe("createPost", ()=>{
         expect(()=>{
             postagem.createPost(userId,invalidId)
         }).to.throw("ID inválido");
-});
+    });
 
     it("Deve lançar um erro caso o 'id' já esteja cadastrado", ()=>{
         const post = {
@@ -107,17 +107,17 @@ describe("createPost", ()=>{
         };
         postagem.createPost(userId,post);
 
-    const postDuplicate = {
-        id: 10,
-        category: "Teste 2",
-        content: "Teste 2",
-        createdAt: "2024/10/02"
-    };
+        const postDuplicate = {
+            id: 10,
+            category: "Teste 2",
+            content: "Teste 2",
+            createdAt: "2024/10/02"
+        };
 
-    expect(()=>{
-        postagem.createPost(userId,postDuplicate)
-    }).to.throw("ID já está cadastrado");
-});
+        expect(()=>{
+            postagem.createPost(userId,postDuplicate)
+        }).to.throw("ID já está cadastrado");
+    });
 
     // Teste de Conteúdo vazio
     it("Deve lançar um erro caso o campo 'content' seja vazio", ()=>{
@@ -218,7 +218,7 @@ describe("createPost", ()=>{
         expect(()=>{
             postagem.createPost(nonExistentUserId, validPost)
         }).to.throw("Usuário não encontrado");
-});
+    });
 });
 
 describe("removePost",()=>{
@@ -332,7 +332,7 @@ describe("searchPost",()=>{
     });
 });
 
-describe("serachPostCategoria",()=>{
+describe("searchPostCategoria",()=>{
     it("Deve retornar todos os post com uma categoria especifica",()=>{
         const user = {
             id: 5,
