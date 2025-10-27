@@ -1,155 +1,160 @@
 {
   "users": [
     {
-      "id": 1,
-      "name": "João Silva",
-      "userName": "joaozito",
-      "password": "hashedpassword123",
-      "email": "joao@exemplo.com",
-      "gallery": [
-        {
-          "id": 101,
-          "imageUrl": "/images/joao/praia.jpg",
-          "description": "Pôr do sol maravilhoso na praia.",
-          "createdAt": "2024-10-23T09:00:00Z",
-          "comments": [
-            {
-              "id": 301,
-              "idAutor": 2,
-              "content": "Foto incrível!",
-              "createdAt": "2024-10-23T10:00:00Z"
-            }
-          ]
-        }
-      ],
-      "posts": [
-        {
-          "id": 201,
-          "category": "Tecnologia",
-          "content": "Minha análise inicial sobre a nova linguagem de programação.",
-          "createdAt": "2024-10-25T10:00:00Z",
-          "comments": [
-            {
-              "id": 302,
-              "idAutor": 2,
-              "content": "Ótima review, João!",
-              "createdAt": "2024-10-25T10:15:00Z"
-            }
-          ]
-        },
-        {
-          "id": 202,
-          "category": "Viagem",
-          "content": "Fotos incríveis da minha viagem para a Patagônia!",
-          "createdAt": "2024-10-24T15:30:00Z",
-          "comments": []
-        }
-      ]
+      "id": 101,
+      "name": "Alex Costa",
+      "userName": "alex.c",
+      "password": "123",
+      "email": "alex.costa@tech.com"
     },
     {
-      "id": 2,
-      "name": "Maria Souza",
-      "userName": "marisouza",
-      "password": "hashedpassword456",
-      "email": "maria@exemplo.com",
-      "gallery": [
-        {
-          "id": 102,
-          "imageUrl": "/images/maria/montanha.jpg",
-          "description": "Chegamos ao pico da montanha!",
-          "createdAt": "2024-10-24T12:00:00Z",
-          "comments": []
-        }
-      ],
-      "posts": [
-        {
-          "id": 203,
-          "category": "Culinária",
-          "content": "Receita fácil de pão caseiro. Fica uma delícia!",
-          "createdAt": "2024-10-25T11:45:00Z",
-          "comments": [
-            {
-              "id": 303,
-              "idAutor": 1,
-              "content": "Vou tentar fazer essa receita!",
-              "createdAt": "2024-10-25T12:00:00Z"
-            }
-          ]
-        }
-      ]
+      "id": 102,
+      "name": "Beatriz Lima",
+      "userName": "bia_lima",
+      "password": "456",
+      "email": "beatriz.l@viagens.net"
     },
     {
-      "id": 3,
-      "name": "Pedro Alvares",
-      "userName": "pedrao",
-      "password": "hashedpassword789",
-      "email": "pedro@exemplo.com",
-      "gallery": [
-        {
-          "id": 103,
-          "imageUrl": "/images/pedro/cidade.jpg",
-          "description": "Vista noturna do centro da cidade.",
-          "createdAt": "2024-10-22T19:30:00Z",
-          "comments": []
-        }
-      ],
-      "posts": [
-        {
-          "id": 204,
-          "category": "Música",
-          "content": "Review do novo álbum de rock progressivo.",
-          "createdAt": "2024-10-25T08:00:00Z",
-          "comments": []
-        }
-      ]
+      "id": 103,
+      "name": "Carlos Mello",
+      "userName": "c.mello",
+      "password": "789",
+      "email": "carlos.mello@arte.org"
     },
     {
-      "id": 4,
-      "name": "Ana Clara",
-      "userName": "anaclara_dev",
-      "password": "hashedpassword012",
-      "email": "ana@exemplo.com",
-      "gallery": [],
-      "posts": [
-        {
-          "id": 205,
-          "category": "Programação",
-          "content": "Dicas para otimizar o desempenho do JavaScript.",
-          "createdAt": "2024-10-25T13:00:00Z",
-          "comments": [
-            {
-              "id": 304,
-              "idAutor": 3,
-              "content": "Muito útil, Ana! Já apliquei uma das dicas.",
-              "createdAt": "2024-10-25T13:10:00Z"
-            }
-          ]
-        }
-      ]
+      "id": 104,
+      "name": "Diana Rocha",
+      "userName": "dianar",
+      "password": "abc",
+      "email": "diana.rocha@cozinha.br"
     },
     {
-      "id": 5,
-      "name": "Lucas Fernandes",
-      "userName": "luf_fotografia",
-      "password": "hashedpassword345",
-      "email": "lucas@exemplo.com",
-      "gallery": [
-        {
-          "id": 104,
-          "imageUrl": "/images/lucas/natureza.jpg",
-          "description": "Primeira foto macro que capturei. Adorei o resultado!",
-          "createdAt": "2024-10-25T07:15:00Z",
-          "comments": []
-        },
-        {
-          "id": 105,
-          "imageUrl": "/images/lucas/retrato.jpg",
-          "description": "Retrato em estúdio.",
-          "createdAt": "2024-10-24T09:00:00Z",
-          "comments": []
-        }
-      ],
-      "posts": []
+      "id": 105,
+      "name": "Eduardo Neves",
+      "userName": "edunv",
+      "password": "xyz",
+      "email": "eduardo.neves@sports.com"
+    }
+  ],
+  "photos": [
+    {
+      "idUser": 101,
+      "id": 201,
+      "type": "image/jpeg",
+      "description": "Foto de um novo protótipo de drone.",
+      "createDat": "2024-11-20T10:00:00Z"
+    },
+    {
+      "idUser": 102,
+      "id": 202,
+      "type": "image/png",
+      "description": "Pôr do sol na praia de Copacabana.",
+      "createDat": "2024-11-20T15:30:00Z"
+    },
+    {
+      "idUser": 103,
+      "id": 203,
+      "type": "image/webp",
+      "description": "Desenho digital abstrato.",
+      "createDat": "2024-11-21T09:15:00Z"
+    },
+    {
+      "idUser": 104,
+      "id": 204,
+      "type": "image/jpeg",
+      "description": "Prato de lasanha que preparei hoje.",
+      "createDat": "2024-11-21T18:45:00Z"
+    },
+    {
+      "idUser": 105,
+      "id": 205,
+      "type": "image/gif",
+      "description": "Lance incrível no jogo de basquete.",
+      "createDat": "2024-11-22T11:20:00Z"
+    }
+  ],
+  "posts": [
+    {
+      "idUser": 101,
+      "id": 301,
+      "category": "Tecnologia",
+      "content": "Análise das novidades do último evento de lançamentos.",
+      "createdAt": "2024-11-22T14:00:00Z"
+    },
+    {
+      "idUser": 102,
+      "id": 302,
+      "category": "Viagem",
+      "content": "Roteiro de 7 dias pela Patagônia, imperdível!",
+      "createdAt": "2024-11-23T08:30:00Z"
+    },
+    {
+      "idUser": 103,
+      "id": 303,
+      "category": "Arte",
+      "content": "Discussão sobre o uso de cores primárias na pintura.",
+      "createdAt": "2024-11-23T12:45:00Z"
+    },
+    {
+      "idUser": 104,
+      "id": 304,
+      "category": "Culinária",
+      "content": "Melhores técnicas para massas caseiras perfeitas.",
+      "createdAt": "2024-11-24T10:10:00Z"
+    },
+    {
+      "idUser": 105,
+      "id": 305,
+      "category": "Esportes",
+      "content": "Previsões para a final do campeonato de vôlei.",
+      "createdAt": "2024-11-24T16:55:00Z"
+    }
+  ],
+  "comments": [
+    {
+      "idTargetUser": 101,
+      "targetType": "photo",
+      "targetId": 201,
+      "id": 401,
+      "conteudo": "Drone sensacional! Onde posso comprar?",
+      "idAutor": 102,
+      "dataCriacao": "2024-11-20T11:30:00Z"
+    },
+    {
+      "idTargetUser": 102,
+      "targetType": "photo",
+      "targetId": 202,
+      "id": 402,
+      "conteudo": "Que luz linda! A foto ficou incrível.",
+      "idAutor": 104,
+      "dataCriacao": "2024-11-20T16:05:00Z"
+    },
+    {
+      "idTargetUser": 103,
+      "targetType": "post",
+      "targetId": 303,
+      "id": 403,
+      "conteudo": "Ótimo post, as cores dão vida à tela.",
+      "idAutor": 105,
+      "dataCriacao": "2024-11-23T13:30:00Z"
+    },
+    {
+      "idTargetUser": 104,
+      "targetType": "post",
+      "targetId": 304,
+      "id": 404,
+      "conteudo": "Segui o passo a passo e a massa ficou perfeita! Obrigado!",
+      "idAutor": 101,
+      "dataCriacao": "2024-11-24T12:00:00Z"
+    },
+    {
+      "idTargetUser": 105,
+      "targetType": "post",
+      "targetId": 305,
+      "id": 405,
+      "conteudo": "Acho que o time X tem mais chances. Veremos!",
+      "idAutor": 102,
+      "dataCriacao": "2024-11-24T18:15:00Z"
     }
   ]
 }
