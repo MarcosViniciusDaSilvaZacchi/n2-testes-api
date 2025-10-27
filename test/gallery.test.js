@@ -26,7 +26,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         sinon.restore();
     });
 
-    // Testes para uploadPhoto (10 Assert) 
+    // 1 Testes para uploadPhoto (10 Assert) 
     describe('uploadPhoto com ASSERT', () => {
         it('ASSERT - Deve fazer upload de foto com sucesso', () => {
             const userId = 1;
@@ -95,7 +95,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
     });
 
-    // Testes para getPhotoById (5 Expect + Sinon)
+    // 2 Testes para getPhotoById (5 Expect + Sinon)
     describe('getPhotoById com EXPECT e SINON', () => {
         it('EXPECT - Deve retornar undefined se o ID da imagem não for encontrado', () => {
             gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 }); // Adiciona uma foto
@@ -141,7 +141,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
          });
     });
 
-    //Testes para getPhotosByUser (5 Should)
+    // 3 Testes para getPhotosByUser (5 Should)
     describe('getPhotosByUser com SHOULD', () => {
         beforeEach(() => {
             // Adiciona múltiplas fotos para o usuário 1 e uma para o usuário 2
@@ -183,7 +183,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
     });
 
-    // Testes para getPhotosByRangeDate (5 Sinon/variados) 
+    // 4 Testes para getPhotosByRangeDate (5 Sinon/variados) 
     describe('getPhotosByRangeDate com SINON', () => {
         let getUserStub;
         const fakeUser = {
@@ -234,7 +234,7 @@ describe('Gerenciamento da Galeria de Fotos (Integrado com User)', () => {
         });
     });
 
-    //Testes para deletePhoto (5 Should/Assert)
+    // 5 Testes para deletePhoto (5 Should/Assert)
     describe('deletePhoto com SHOULD e ASSERT', () => {
         beforeEach(() => {
              gallery.uploadPhoto(sampleUser.id, { ...sampleImageData, id: 10 });
