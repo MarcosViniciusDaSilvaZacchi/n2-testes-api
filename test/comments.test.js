@@ -31,7 +31,7 @@ describe("Testes de Comentários", () => {
       comments.criarComentario(1, 'post', 2, {
         id: 1, 
         conteudo: "Muito boa!", 
-        dAutor: 2, 
+        idAutor: 2, 
         dataCriacao: new Date()
       });
         const comentarioCriado = comments.procuraComentario(1, 'post', 2, 1);
