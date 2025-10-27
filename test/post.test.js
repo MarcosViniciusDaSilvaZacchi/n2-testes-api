@@ -426,7 +426,7 @@ describe("getPostsByRangeDate",()=>{
         expect(rangeDate).to.have.lengthOf(3);
         expect(rangeDate.map(p => p.category)).to.deep.equal(["Tecnologia", "Esportes", "Culinaria"]);
     });
-    it("A data de inicio não deve ser menor que a data final",()=>{
+    it("A data de inicio não deve ser maior que a data final",()=>{
         const user = {
             id: 7,
             name: 'Catatau',
@@ -438,7 +438,7 @@ describe("getPostsByRangeDate",()=>{
     
         expect(()=>{
             postagem.getPostsByRangeDate(user.id, "2025/12/12", "2025/01/01")
-        }).to.throw("A data de inicio não deve ser menor que a data final");
+        }).to.throw("A data de inicio não deve ser maior que a data final");
     });
     it("Deve retornar uma array vazia",()=>{
         const userId = 99;
