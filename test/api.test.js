@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 // URL base do JSONPlaceholder
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
-describe('JSONPlaceholder - Testes de API', () => {
+describe.only('JSONPlaceholder - Testes de API', () => {
 
   describe('GET', () => {
     it('/posts - Deve retornar todos os posts cadastrados', async () => {
@@ -224,12 +224,13 @@ describe('JSONPlaceholder - Testes de API', () => {
       const res = await chai.request(BASE_URL).put('/posts/1').send(updatePost);
 
       expect(res).to.have.status(200);
+      expect(res.body).to.be.an('object');
       expect(res.body).to.deep.equal(updatePost);
     });
 
     it('/photos/1 - Verifica que o ID da URL (1) não é alterado', async () => {
       const updatePhoto = {
-        id: 2
+        id: 99
       };
 
       const res = await chai.request(BASE_URL).put('/photos/1').send(updatePhoto);
@@ -341,8 +342,8 @@ describe('JSONPlaceholder - Testes de API', () => {
       }
     });
 
-    it('/albums/999 - Verifica a remoção de um album inexistente', async () => {
-      const res = await chai.request(BASE_URL).delete('/albums/999');
+    it('/albums/9999 - Verifica a remoção de um album inexistente', async () => {
+      const res = await chai.request(BASE_URL).delete('/albums/9999');
 
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('object');
