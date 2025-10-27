@@ -70,7 +70,6 @@ describe('JSONPlaceholder - Testes de API', () => {
       });
     });
 
-    
     it('/users/1/todos - Garante que as tarefas de users/1 tem o userId igual 1', async () => {
       const res = await chai.request(BASE_URL).get('/users/1/todos');
 

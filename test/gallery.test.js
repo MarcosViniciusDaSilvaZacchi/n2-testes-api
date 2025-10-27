@@ -1,9 +1,7 @@
-// test/gallery.test.js (Versão Final Consolidada e Corrigida)
-
 const chai = require('chai');
 const sinon = require('sinon');
-const usuario = require('../src/user.js'); // Dependência do módulo User
-const gallery = require('../src/gallery.js'); // Módulo Gallery a ser testado
+const usuario = require('../src/user.js');
+const gallery = require('../src/gallery.js'); 
 
 const should = chai.should();
 const expect = chai.expect;
