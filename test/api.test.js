@@ -133,7 +133,7 @@ describe('JSONPlaceholder - Testes de API', () => {
         userId: 1,
         title: 'Teste de API',
         body: 'Um post criado para teste de API'
-    };
+      };
 
       const res = await chai.request(BASE_URL).post('/posts').send(newPost);
 
