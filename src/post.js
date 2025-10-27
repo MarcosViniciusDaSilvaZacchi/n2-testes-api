@@ -61,7 +61,7 @@ function getPostsByRangeDate(userId, dateStart, dateEnd) {
     dateEnd = new Date(dateEnd);
 
     if (dateStart > dateEnd) 
-        throw new Error('A data de inicio não deve ser menor que a data final');
+        throw new Error('A data de inicio não deve ser maior que a data final');
 
     return user.posts.filter(post => 
         post.createdAt >= dateStart && post.createdAt <= dateEnd
