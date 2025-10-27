@@ -211,7 +211,7 @@ describe("Testes de Comentários", () => {
     });
   });
 
-  describe("listarComentariosPorPostagem()", () => {
+  describe("listarComentariosPorFoto()", () => {
     it("Listar comentários de uma foto", () => {
       comments.criarComentario(1, 'photo', 1, { id: 1, conteudo: "Muito boa!",   idAutor: 2, dataCriacao: new Date() });
       comments.criarComentario(1, 'photo', 1, { id: 2, conteudo: "Maravilhoso!", idAutor: 2, dataCriacao: new Date() });
