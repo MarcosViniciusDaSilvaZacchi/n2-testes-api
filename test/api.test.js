@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 // URL base do JSONPlaceholder
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
-describe.only('JSONPlaceholder - Testes de API', () => {
+describe('JSONPlaceholder - Testes de API', () => {
 
   describe('GET', () => {
     it('/posts - Deve retornar todos os posts cadastrados', async () => {
